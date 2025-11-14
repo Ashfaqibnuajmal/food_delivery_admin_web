@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/confiorm_dilog.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
+import 'package:user_app/core/widgets/network_image_placeolder.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
@@ -140,26 +141,28 @@ class Body extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  // Image
                                   Expanded(
                                     child: Center(
-                                      child: Container(
+                                      child: ShimmerNetworkImage(
+                                        imageUrl: value.imageUrl,
                                         width: 40,
                                         height: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          color: AppColors.pureWhite,
-                                          image: DecorationImage(
-                                            image: NetworkImage(value.imageUrl),
-                                            fit: BoxFit.cover,
+                                        borderRadius: BorderRadius.circular(8),
+                                        fit: BoxFit.cover,
+                                        // optional: custom error widget
+                                        errorWidget: Container(
+                                          width: 40,
+                                          height: 40,
+                                          color: AppColors.lightGrey,
+                                          child: const Icon(
+                                            Icons.image_not_supported,
+                                            color: AppColors.pureWhite,
+                                            size: 20,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-
                                   // Name
                                   Expanded(
                                     child: Center(

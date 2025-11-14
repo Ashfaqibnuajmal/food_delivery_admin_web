@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/features/due%20payment/data/model/due_user_model.dart';
 import 'package:user_app/features/due%20payment/data/services/due_payment_services.dart';
 import 'package:user_app/features/due%20payment/presentation/screens/due_payment_view_screen.dart';
@@ -99,7 +100,7 @@ class DuePaymentTable extends StatelessWidget {
                   child: Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.redAccent,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 8,
@@ -108,8 +109,12 @@ class DuePaymentTable extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () async {
-                        await dueService.deleteDueUser(user.userId);
+                      onPressed: () {
+                        customDeleteDialog(context, () async {
+                          await dueService.deleteDueUser(user.userId);
+                          // ignore: use_build_context_synchronously
+                          Navigator.pop(context);
+                        });
                       },
                       child: const Text("Delete", style: CustomTextStyles.text),
                     ),

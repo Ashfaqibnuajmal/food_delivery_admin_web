@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/confiorm_dilog.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/features/expances/data/models/expance_model.dart';
 import 'package:user_app/features/expances/data/services/expance_services.dart';
 import 'package:user_app/features/expances/presentation/widgets/expance_edit_dilog.dart';

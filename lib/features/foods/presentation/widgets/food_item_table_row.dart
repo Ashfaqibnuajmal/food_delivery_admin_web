@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/confiorm_dilog.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
+import 'package:user_app/core/widgets/network_image_placeolder.dart';
 import 'package:user_app/features/foods/data/model/food_item_model.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 import 'package:user_app/features/foods/presentation/widgets/food_item_edit_dilog.dart';
@@ -17,21 +18,27 @@ class FoodItemTableRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      // ignore: deprecated_member_use
       decoration: BoxDecoration(color: AppColors.lightBlue.withOpacity(0.08)),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Center(
-              child: Container(
+              child: ShimmerNetworkImage(
+                imageUrl: food.imageUrl,
                 width: 40,
                 height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.pureWhite,
-                  image: DecorationImage(
-                    image: NetworkImage(food.imageUrl),
-                    fit: BoxFit.cover,
+                borderRadius: BorderRadius.circular(8),
+                fit: BoxFit.cover,
+                errorWidget: Container(
+                  width: 40,
+                  height: 40,
+                  color: AppColors.lightGrey,
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: AppColors.pureWhite,
+                    size: 20,
                   ),
                 ),
               ),
