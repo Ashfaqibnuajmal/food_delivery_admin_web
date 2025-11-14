@@ -67,7 +67,7 @@ custemAddDialog({
 
               // 📝 Category Name TextField
               CustemTextFIeld(
-                hintText: "Enter category name",
+                label: "Enter category name",
                 controller: controller,
               ),
 

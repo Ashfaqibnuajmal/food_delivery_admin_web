@@ -4,7 +4,7 @@ import 'package:user_app/core/theme/web_color.dart';
 // ignore: must_be_immutable
 class CustemTextFIeld extends StatefulWidget {
   final TextInputType textType;
-  final String hintText;
+  final String label;
   final TextEditingController controller;
   final bool password;
   final bool readOnly;
@@ -17,7 +17,7 @@ class CustemTextFIeld extends StatefulWidget {
     this.enabled = true,
     this.ontap,
     this.textType = TextInputType.text,
-    required this.hintText,
+    required this.label,
     required this.controller,
     this.password = false,
     this.readOnly = false,
@@ -43,6 +43,7 @@ class _CustemTextFIeldState extends State<CustemTextFIeld> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
+
         TextFormField(
           enabled: widget.enabled,
           keyboardType: widget.textType,
@@ -53,8 +54,7 @@ class _CustemTextFIeldState extends State<CustemTextFIeld> {
           onTap: widget.ontap,
           style: const TextStyle(color: AppColors.pureWhite),
           decoration: InputDecoration(
-            hintText: widget.hintText,
-            hintStyle: const TextStyle(color: Colors.white70),
+            label: Text(widget.label, style: TextStyle(color: Colors.white)),
             filled: true,
             fillColor: AppColors.darkBlue,
             suffixIcon: widget.password
@@ -87,7 +87,8 @@ class _CustemTextFIeldState extends State<CustemTextFIeld> {
             ),
           ),
         ),
-        const SizedBox(height: 5),
+
+        const SizedBox(height: 10),
       ],
     );
   }

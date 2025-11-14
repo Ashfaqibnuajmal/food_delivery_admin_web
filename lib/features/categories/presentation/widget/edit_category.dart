@@ -65,7 +65,7 @@ Future<void> showEditCategoryDialog({
 
               // Category Name TextField
               CustemTextFIeld(
-                hintText: "Enter category name",
+                label: "Enter category name",
                 controller: nameController,
               ),
               const SizedBox(height: 20),

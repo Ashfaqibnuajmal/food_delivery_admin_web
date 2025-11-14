@@ -3,10 +3,12 @@ import 'package:user_app/core/theme/web_color.dart';
 
 InputDecoration inputDecoration(String label) {
   return InputDecoration(
-    hintText: label,
+    labelText: label,
+    labelStyle: const TextStyle(color: Colors.white),
+    hintText: "Enter $label",
     hintStyle: const TextStyle(color: Colors.white),
     filled: true,
-    fillColor: AppColors.darkBlue, // theme background for inputs
+    fillColor: AppColors.darkBlue,
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
     enabledBorder: OutlineInputBorder(
       borderSide: const BorderSide(color: Colors.transparent),

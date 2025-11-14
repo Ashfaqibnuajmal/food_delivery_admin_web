@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/due%20payment/data/model/due_user_model.dart';
 import 'package:user_app/features/due%20payment/data/services/due_payment_services.dart';
 import 'package:uuid/uuid.dart';
@@ -118,23 +119,5 @@ Future<void> customAddDuePaymentDialog({required BuildContext context}) async {
         ),
       );
     },
-  );
-}
-
-InputDecoration inputDecoration(String label) {
-  return InputDecoration(
-    hintText: label,
-    hintStyle: const TextStyle(color: Colors.white70),
-    filled: true,
-    fillColor: AppColors.darkBlue,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-    enabledBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: Colors.transparent),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: AppColors.lightBlue, width: 2),
-      borderRadius: BorderRadius.circular(8),
-    ),
   );
 }

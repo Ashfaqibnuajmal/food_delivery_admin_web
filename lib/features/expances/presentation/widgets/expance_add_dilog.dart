@@ -69,10 +69,15 @@ Future<void> customAddExpenseDialog({
 
               // ✅ Category Dropdown
               DropdownButtonFormField<String>(
-                decoration: inputDecoration("Category"),
-                value: provider.category,
+                decoration: inputDecoration(""),
+                initialValue: provider.category,
                 dropdownColor: AppColors.deepBlue,
                 style: CustomTextStyles.text,
+                hint: const Text(
+                  "Select a category",
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
                 items: const [
                   DropdownMenuItem(
                     value: "Electricity",
@@ -109,10 +114,15 @@ Future<void> customAddExpenseDialog({
 
               // ✅ Status Dropdown
               DropdownButtonFormField<String>(
-                decoration: inputDecoration("Status"),
-                value: provider.status,
+                decoration: inputDecoration(""),
+                initialValue: provider.status,
                 dropdownColor: AppColors.deepBlue,
                 style: CustomTextStyles.text,
+                hint: const Text(
+                  "Select a status",
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
                 items: const [
                   DropdownMenuItem(value: "Paid", child: Text("Paid")),
                   DropdownMenuItem(value: "Consumed", child: Text("Consumed")),

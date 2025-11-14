@@ -159,13 +159,18 @@ Future<void> customAddFoodItemDialog({
                             .toList();
 
                         return DropdownButtonFormField<String>(
-                          value: dialogProvider.selectedCategory,
+                          initialValue: dialogProvider.selectedCategory,
                           isExpanded: true,
-                          decoration: inputDecoration("Select category name"),
+                          decoration: inputDecoration(""),
                           dropdownColor: AppColors.darkBlue,
                           style: CustomTextStyles.text.copyWith(
                             color: Colors.white,
                             fontSize: 16,
+                          ),
+                          hint: const Text(
+                            "Select a category",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
                           iconEnabledColor: Colors.white70,
                           items: categories
@@ -323,11 +328,8 @@ Future<void> customAddFoodItemDialog({
   );
 }
 
-//────────────────────────────────────────────
-// 🔹 Helper widgets
-//────────────────────────────────────────────
 Widget _field(
-  String hint,
+  String label,
   TextEditingController ctl, {
   TextInputType keyboard = TextInputType.text,
   int maxLines = 1,
@@ -336,7 +338,7 @@ Widget _field(
     controller: ctl,
     keyboardType: keyboard,
     maxLines: maxLines,
-    decoration: inputDecoration(hint),
+    decoration: inputDecoration(label),
     style: CustomTextStyles.text,
   );
 }
@@ -361,6 +363,7 @@ Widget _checkBoxItem({
         ),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: AppColors.lightBlue.withOpacity(0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),

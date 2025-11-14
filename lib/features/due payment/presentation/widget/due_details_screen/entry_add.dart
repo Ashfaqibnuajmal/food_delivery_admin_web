@@ -84,9 +84,14 @@ Future<void> customAddEntryDialog({
 
                 // 🔹 Status Dropdown
                 DropdownButtonFormField<String>(
-                  decoration: inputDecoration("Status"),
+                  decoration: inputDecoration(""),
                   dropdownColor: AppColors.deepBlue,
                   style: CustomTextStyles.text,
+                  hint: const Text(
+                    "Select a status",
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
                   items: const [
                     DropdownMenuItem(value: "Paid", child: Text("Paid")),
                     DropdownMenuItem(

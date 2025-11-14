@@ -86,10 +86,15 @@ Future<void> customEditEntryDialog({
 
                 // 🔹 Status dropdown (pre-selected)
                 DropdownButtonFormField<String>(
-                  decoration: inputDecoration("Status"),
+                  decoration: inputDecoration(""),
                   dropdownColor: AppColors.deepBlue,
-                  value: status,
+                  initialValue: status,
                   style: const TextStyle(color: AppColors.pureWhite),
+                  hint: const Text(
+                    "Select a status",
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
                   items: const [
                     DropdownMenuItem(value: "Paid", child: Text("Paid")),
                     DropdownMenuItem(
