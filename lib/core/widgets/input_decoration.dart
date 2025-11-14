@@ -20,3 +20,15 @@ InputDecoration inputDecoration(String label) {
     ),
   );
 }
+
+String? validator(String? value, String fieldName) {
+  if (value == null || value.trim().isEmpty) {
+    return "$fieldName is required";
+  }
+  return null;
+}
+
+String? dateValidator(DateTime? value) {
+  if (value == null) return "Date is required";
+  return null;
+}

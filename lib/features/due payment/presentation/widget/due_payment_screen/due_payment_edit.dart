@@ -2,13 +2,16 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/due%20payment/data/model/due_user_model.dart';
-import 'package:user_app/features/due%20payment/data/services/due_payment_services.dart';
+import 'package:user_app/features/due payment/data/model/due_user_model.dart';
+import 'package:user_app/features/due payment/data/services/due_payment_services.dart';
+import 'package:user_app/core/widgets/input_decoration.dart';
 
 Future<void> customEditDuePaymentDialog({
   required BuildContext context,
   required DueUserModel currentUser,
 }) async {
+  final formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController(text: currentUser.name);
   final phoneController = TextEditingController(text: currentUser.phone);
   final emailController = TextEditingController(text: currentUser.email);
@@ -25,119 +28,96 @@ Future<void> customEditDuePaymentDialog({
         child: Padding(
           padding: const EdgeInsets.all(16).copyWith(bottom: 20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text(
-                    "Edit Due Payment User",
-                    style: CustomTextStyles.title,
-                  ),
-                ),
-                const SizedBox(height: 25),
-
-                // Name
-                TextField(
-                  controller: nameController,
-                  keyboardType: TextInputType.text,
-                  decoration: inputDecoration("Name"),
-                  style: CustomTextStyles.text,
-                ),
-                const SizedBox(height: 20),
-
-                // Phone
-                TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: inputDecoration("Phone number"),
-                  style: CustomTextStyles.text,
-                ),
-                const SizedBox(height: 20),
-
-                // Email
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: inputDecoration("Email"),
-                  style: CustomTextStyles.text,
-                ),
-                const SizedBox(height: 30),
-
-                // Update button
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.lightBlue,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 18,
-                        horizontal: 24,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      "Edit Due Payment User",
+                      style: CustomTextStyles.title,
                     ),
-                    onPressed: () async {
-                      final updatedName = nameController.text.trim();
-                      final updatedPhone = phoneController.text.trim();
-                      final updatedEmail = emailController.text.trim();
+                  ),
+                  const SizedBox(height: 25),
 
-                      if (updatedName.isEmpty ||
-                          updatedPhone.isEmpty ||
-                          updatedEmail.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("All fields are required"),
-                          ),
+                  // Name
+                  TextFormField(
+                    controller: nameController,
+                    keyboardType: TextInputType.text,
+                    decoration: inputDecoration("Name"),
+                    validator: (value) => validator(value, "Name"),
+                    style: CustomTextStyles.text,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Phone
+                  TextFormField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: inputDecoration("Phone number"),
+                    validator: (value) => validator(value, "Phone number"),
+                    style: CustomTextStyles.text,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Email
+                  TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: inputDecoration("Email"),
+                    validator: (value) => validator(value, "Email"),
+                    style: CustomTextStyles.text,
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Update button
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.lightBlue,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 24,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) {
+                          return; // ❌ validations failed
+                        }
+
+                        final updatedUser = DueUserModel(
+                          userId: currentUser.userId,
+                          name: nameController.text.trim(),
+                          phone: phoneController.text.trim(),
+                          email: emailController.text.trim(),
+                          balance: currentUser.balance,
                         );
-                        return;
-                      }
 
-                      final updatedUser = DueUserModel(
-                        userId: currentUser.userId,
-                        name: updatedName,
-                        phone: updatedPhone,
-                        email: updatedEmail,
-                        balance: currentUser.balance,
-                      );
-
-                      try {
-                        await duePaymentService.editDueUser(updatedUser);
-                        log("✅ User updated: ${updatedUser.name}");
-                        if (context.mounted) Navigator.pop(context);
-                      } catch (e) {
-                        log("❌ Error editing user: $e");
-                      }
-                    },
-                    child: const Text(
-                      "Update",
-                      style: CustomTextStyles.buttonText,
+                        try {
+                          await duePaymentService.editDueUser(updatedUser);
+                          log("✅ User updated: ${updatedUser.name}");
+                          if (context.mounted) Navigator.pop(context);
+                        } catch (e) {
+                          log("❌ Error editing user: $e");
+                        }
+                      },
+                      child: const Text(
+                        "Update",
+                        style: CustomTextStyles.buttonText,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       );
     },
-  );
-}
-
-InputDecoration inputDecoration(String label) {
-  return InputDecoration(
-    hintText: label,
-    hintStyle: const TextStyle(color: Colors.white70),
-    filled: true,
-    fillColor: AppColors.darkBlue,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-    enabledBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: Colors.transparent),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: const BorderSide(color: AppColors.lightBlue, width: 2),
-      borderRadius: BorderRadius.circular(8),
-    ),
   );
 }

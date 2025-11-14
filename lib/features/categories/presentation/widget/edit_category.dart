@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/functions/image_functions.dart';
 import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/theme/textstyle.dart';
-import 'package:user_app/core/widgets/customtextfield.dart';
+import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/widgets/input_decoration.dart';
 
 Future<void> showEditCategoryDialog({
   required BuildContext context,
@@ -12,6 +13,7 @@ Future<void> showEditCategoryDialog({
   String? oldImage,
   required void Function(String newName) onSave,
 }) async {
+  final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController(text: currentName);
 
   await showDialog(
@@ -20,81 +22,98 @@ Future<void> showEditCategoryDialog({
       final imageProvider = Provider.of<ImageProviderModel>(context);
 
       return Dialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.deepBlue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         insetPadding: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
         child: Padding(
           padding: const EdgeInsets.all(16).copyWith(bottom: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Image Picker Container
-              GestureDetector(
-                onTap: () async {
-                  try {
-                    final image = await pickImage();
-                    imageProvider.setImage(image);
-                  } catch (e) {
-                    log(e.toString());
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blueGrey, width: 2),
-                    color: Colors.grey[200],
-                  ),
-                  height: 200,
-                  width: double.infinity,
-                  child: imageProvider.pickedImage != null
-                      ? Image.memory(
-                          imageProvider.pickedImage!,
-                          fit: BoxFit.contain,
-                        )
-                      : oldImage != null
-                      ? Image.network(oldImage, fit: BoxFit.contain)
-                      : const Center(
-                          child: Text(
-                            "Click here to add image!",
-                            style: TextStyle(color: Colors.black),
-                          ),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 🖼 Image Picker
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        final image = await pickImage();
+                        imageProvider.setImage(image);
+                      } catch (e) {
+                        log(e.toString());
+                      }
+                    },
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.mediumBlue,
+                          width: 2,
                         ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Category Name TextField
-              CustemTextFIeld(
-                label: "Enter category name",
-                controller: nameController,
-              ),
-              const SizedBox(height: 20),
-
-              // Save Changes Button
-              ElevatedButton(
-                onPressed: () {
-                  final newName = nameController.text.trim();
-                  if (newName.isNotEmpty) {
-                    onSave(newName);
-                    Navigator.pop(context);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 24,
+                        color: AppColors.darkBlue,
+                      ),
+                      child: imageProvider.pickedImage != null
+                          ? Image.memory(
+                              imageProvider.pickedImage!,
+                              fit: BoxFit.contain,
+                            )
+                          : oldImage != null
+                          ? Image.network(oldImage, fit: BoxFit.contain)
+                          : const Center(
+                              child: Text(
+                                "Click here to add image!",
+                                style: TextStyle(
+                                  color: AppColors.pureWhite,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+
+                  const SizedBox(height: 20),
+
+                  // 📝 Name Field
+                  TextFormField(
+                    controller: nameController,
+                    keyboardType: TextInputType.text,
+                    decoration: inputDecoration("Category Name"),
+                    validator: (value) => validator(value, "Name"),
+                    style: const TextStyle(color: AppColors.pureWhite),
                   ),
-                ),
-                child: const Text(
-                  "Save Changes",
-                  style: CustomTextStyles.addCategory,
-                ),
+
+                  const SizedBox(height: 25),
+
+                  // 💾 Save Button
+                  ElevatedButton(
+                    onPressed: () {
+                      if (!formKey.currentState!.validate()) return;
+
+                      final newName = nameController.text.trim();
+                      onSave(newName);
+
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.lightBlue,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      "Save Changes",
+                      style: CustomTextStyles.addCategory,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       );
