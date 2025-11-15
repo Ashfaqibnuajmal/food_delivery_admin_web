@@ -10,6 +10,7 @@ class DuePaymentTableHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.mediumBlue.withOpacity(0.4),
         borderRadius: BorderRadius.circular(8),
       ),

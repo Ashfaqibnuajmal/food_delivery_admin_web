@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'package:user_app/core/functions/image_functions.dart';
 import 'package:user_app/core/provider/pick_image.dart';
@@ -31,8 +32,6 @@ Future<void> customEditFoodItemDialog({
   })
   onUpdate,
 }) async {
-  final formKey = GlobalKey<FormState>();
-
   final TextEditingController nameController = TextEditingController(
     text: food.name,
   );
@@ -77,224 +76,244 @@ Future<void> customEditFoodItemDialog({
                 padding: const EdgeInsets.all(
                   16,
                 ).copyWith(left: 24, right: 24, bottom: 30),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Image Picker
-                      GestureDetector(
-                        onTap: () async {
-                          try {
-                            final image = await pickImage();
-                            imageProvider.setImage(image);
-                          } catch (e) {
-                            log("Image pick error: $e");
-                          }
-                        },
-                        child: Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.darkBlue,
-                            border: Border.all(
-                              color: AppColors.mediumBlue,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 🖼 Image picker
+                    GestureDetector(
+                      onTap: () async {
+                        try {
+                          final image = await pickImage();
+                          imageProvider.setImage(image);
+                        } catch (e) {
+                          log("Image pick error: $e");
+                        }
+                      },
+                      child: Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.darkBlue,
+                          border: Border.all(
+                            color: AppColors.mediumBlue,
+                            width: 2,
                           ),
-                          child: imageProvider.pickedImage != null
-                              ? Image.memory(
-                                  imageProvider.pickedImage!,
-                                  fit: BoxFit.contain,
-                                )
-                              : Image.network(
-                                  food.imageUrl,
-                                  fit: BoxFit.contain,
-                                  loadingBuilder: (context, child, progress) =>
-                                      progress == null
-                                      ? child
-                                      : const Center(
-                                          child: CircularProgressIndicator(
-                                            color: AppColors.lightBlue,
-                                          ),
-                                        ),
-                                ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // NAME
-                      _field(
-                        "Food name",
-                        nameController,
-                        validator: (v) => v == null || v.trim().isEmpty
-                            ? "Name required"
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // PREP TIME
-                      _field(
-                        "Preparation time (min)",
-                        prepController,
-                        keyboard: TextInputType.number,
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? "Required" : null,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // CALORIES
-                      _field(
-                        "Calories (kcal)",
-                        calController,
-                        keyboard: TextInputType.number,
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? "Required" : null,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // DESCRIPTION
-                      _field("Description", descController, maxLines: 2),
-                      const SizedBox(height: 16),
-
-                      // PRICE
-                      _field(
-                        "Price",
-                        priceController,
-                        keyboard: TextInputType.number,
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? "Required" : null,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // CATEGORY DROPDOWN
-                      StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("Category")
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.lightBlue,
+                        child: imageProvider.pickedImage != null
+                            ? Image.memory(
+                                imageProvider.pickedImage!,
+                                fit: BoxFit.contain,
+                              )
+                            : Image.network(
+                                food.imageUrl,
+                                fit: BoxFit.contain,
+                                loadingBuilder: (context, child, progress) {
+                                  if (progress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.lightBlue,
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          }
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
-                          final categories = snapshot.data!.docs
-                              .map((e) => e['name'].toString())
-                              .toList();
+                    // 📝 Input fields
+                    _field("Food name", nameController),
+                    const SizedBox(height: 16),
+                    _field(
+                      "Preparation time (min)",
+                      prepController,
+                      keyboard: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    _field(
+                      "Calories (kcal)",
+                      calController,
+                      keyboard: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    _field("Description", descController, maxLines: 2),
+                    const SizedBox(height: 16),
+                    _field(
+                      "Price",
+                      priceController,
+                      keyboard: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
 
-                          return DropdownButtonFormField<String>(
-                            value: dialogProvider.selectedCategory,
-                            decoration: inputDecoration("Select category name"),
-                            dropdownColor: AppColors.darkBlue,
+                    // 📂 Category dropdown
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("Category")
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.lightBlue,
+                            ),
+                          );
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Text(
+                            "No categories found.",
                             style: CustomTextStyles.text,
-                            items: categories
+                          );
+                        }
+
+                        final categories = snapshot.data!.docs
+                            .map((e) => e['name'].toString())
+                            .toList();
+
+                        return DropdownButtonFormField<String>(
+                          initialValue: dialogProvider.selectedCategory,
+                          isExpanded: true,
+                          decoration: inputDecoration("Select category name"),
+                          dropdownColor: AppColors.darkBlue,
+                          style: CustomTextStyles.text.copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                          iconEnabledColor: Colors.white70,
+                          items: categories
+                              .map(
+                                (e) => DropdownMenuItem<String>(
+                                  value: e,
+                                  child: Center(
+                                    child: Text(
+                                      e,
+                                      style: CustomTextStyles.text,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (val) =>
+                              dialogProvider.selectCategory(val),
+                          selectedItemBuilder: (context) {
+                            return categories
                                 .map(
-                                  (e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Center(
-                                      child: Text(
-                                        e,
-                                        style: CustomTextStyles.text,
-                                      ),
+                                  (e) => Center(
+                                    child: Text(
+                                      e,
+                                      style: CustomTextStyles.text,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 )
-                                .toList(),
-                            onChanged: dialogProvider.selectCategory,
-                            validator: (v) =>
-                                v == null ? "Category required" : null,
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 25),
+                                .toList();
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 25),
 
-                      // Checkboxes
-                      Wrap(
-                        runSpacing: 12,
-                        spacing: 12,
-                        children: [
-                          _checkBoxItem(
-                            label: "Compo Food",
-                            value: dialogProvider.isCompo,
-                            onChanged: (v) =>
-                                dialogProvider.toggleCompo(v ?? false),
-                          ),
-                          _checkBoxItem(
-                            label: "Today Offer",
-                            value: dialogProvider.isTodayOffer,
-                            onChanged: (v) =>
-                                dialogProvider.toggleTodayOffer(v ?? false),
-                          ),
-                          _checkBoxItem(
-                            label: "Half Available",
-                            value: dialogProvider.isHalfAvailable,
-                            onChanged: (v) =>
-                                dialogProvider.toggleHalfAvailable(v ?? false),
-                          ),
-                          _checkBoxItem(
-                            label: "Best Seller",
-                            value: dialogProvider.isBestSeller,
-                            onChanged: (v) =>
-                                dialogProvider.toggleBestSeller(v ?? false),
-                          ),
-                        ],
-                      ),
-
-                      if (dialogProvider.isHalfAvailable) ...[
-                        const SizedBox(height: 16),
-                        _field(
-                          "Half Price",
-                          halfPriceController,
-                          keyboard: TextInputType.number,
-                          validator: (v) =>
-                              dialogProvider.isHalfAvailable &&
-                                  (v == null || v.trim().isEmpty)
-                              ? "Half price required"
-                              : null,
+                    // ✅ Checkboxes
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      runSpacing: 12,
+                      spacing: 12,
+                      children: [
+                        _checkBoxItem(
+                          label: "Compo Food",
+                          value: dialogProvider.isCompo,
+                          onChanged: (v) =>
+                              dialogProvider.toggleCompo(v ?? false),
+                        ),
+                        _checkBoxItem(
+                          label: "Today Offer",
+                          value: dialogProvider.isTodayOffer,
+                          onChanged: (v) =>
+                              dialogProvider.toggleTodayOffer(v ?? false),
+                        ),
+                        _checkBoxItem(
+                          label: "Half Available",
+                          value: dialogProvider.isHalfAvailable,
+                          onChanged: (v) =>
+                              dialogProvider.toggleHalfAvailable(v ?? false),
+                        ),
+                        _checkBoxItem(
+                          label: "Best Seller",
+                          value: dialogProvider.isBestSeller,
+                          onChanged: (v) =>
+                              dialogProvider.toggleBestSeller(v ?? false),
                         ),
                       ],
+                    ),
 
-                      const SizedBox(height: 30),
+                    if (dialogProvider.isHalfAvailable) ...[
+                      const SizedBox(height: 16),
+                      _field(
+                        "Half Price",
+                        halfPriceController,
+                        keyboard: TextInputType.number,
+                      ),
+                    ],
+                    const SizedBox(height: 30),
 
-                      // UPDATE BUTTON
-                      ElevatedButton(
+                    // 🎯 Update button
+                    Center(
+                      child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.lightBlue,
                           padding: const EdgeInsets.symmetric(
                             vertical: 16,
                             horizontal: 300,
                           ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         onPressed: () {
-                          if (!formKey.currentState!.validate()) return;
+                          final name = nameController.text.trim();
+                          final prep =
+                              int.tryParse(prepController.text.trim()) ?? 0;
+                          final cal =
+                              double.tryParse(calController.text.trim()) ?? 0.0;
+                          final desc = descController.text.trim();
+                          final price =
+                              double.tryParse(priceController.text.trim()) ??
+                              0.0;
+                          final halfPrice = dialogProvider.isHalfAvailable
+                              ? double.tryParse(
+                                      halfPriceController.text.trim(),
+                                    ) ??
+                                    0.0
+                              : null;
+
+                          if (name.isEmpty ||
+                              dialogProvider.selectedCategory == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Please fill all required fields.",
+                                ),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                            return;
+                          }
 
                           onUpdate(
                             imageBytes: imageProvider.pickedImage,
                             imageUrl: food.imageUrl,
-                            name: nameController.text.trim(),
-                            prepTimeMinutes:
-                                int.tryParse(prepController.text.trim()) ?? 0,
-                            calories:
-                                double.tryParse(calController.text.trim()) ??
-                                0.0,
-                            description: descController.text.trim(),
-                            price:
-                                double.tryParse(priceController.text.trim()) ??
-                                0.0,
+                            name: name,
+                            prepTimeMinutes: prep,
+                            calories: cal,
+                            description: desc,
+                            price: price,
                             category: dialogProvider.selectedCategory!,
                             isCompo: dialogProvider.isCompo,
                             isTodayOffer: dialogProvider.isTodayOffer,
                             isHalfAvailable: dialogProvider.isHalfAvailable,
-                            halfPrice: dialogProvider.isHalfAvailable
-                                ? double.tryParse(
-                                        halfPriceController.text.trim(),
-                                      ) ??
-                                      0.0
-                                : null,
+                            halfPrice: halfPrice,
                             isBestSeller: dialogProvider.isBestSeller,
                           );
 
@@ -305,8 +324,8 @@ Future<void> customEditFoodItemDialog({
                           style: CustomTextStyles.buttonText,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -318,22 +337,20 @@ Future<void> customEditFoodItemDialog({
 }
 
 //────────────────────────────────────────────
-// 🔹 FIELD WIDGET → NOW SUPPORTS VALIDATOR
+// 🔹 Helper widgets
 //────────────────────────────────────────────
 Widget _field(
   String hint,
   TextEditingController ctl, {
   TextInputType keyboard = TextInputType.text,
   int maxLines = 1,
-  String? Function(String?)? validator,
 }) {
-  return TextFormField(
+  return TextField(
     controller: ctl,
     keyboardType: keyboard,
     maxLines: maxLines,
     decoration: inputDecoration(hint),
     style: CustomTextStyles.text,
-    validator: validator,
   );
 }
 
@@ -344,6 +361,7 @@ Widget _checkBoxItem({
 }) {
   return InkWell(
     onTap: () => onChanged(!value),
+    borderRadius: BorderRadius.circular(8),
     child: Container(
       width: 200,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -354,16 +372,42 @@ Widget _checkBoxItem({
           color: value ? AppColors.lightBlue : Colors.transparent,
           width: 2,
         ),
+        boxShadow: [
+          BoxShadow(
+            // ignore: deprecated_member_use
+            color: AppColors.lightBlue.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Checkbox(
-            value: value,
-            onChanged: onChanged,
-            activeColor: AppColors.lightBlue,
+          Transform.scale(
+            scale: 1.3,
+            child: Checkbox(
+              value: value,
+              onChanged: onChanged,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              side: const BorderSide(color: Colors.white54, width: 1.5),
+              activeColor: AppColors.lightBlue,
+              checkColor: AppColors.pureWhite,
+            ),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Text(label, style: CustomTextStyles.text)),
+          Expanded(
+            child: Text(
+              label,
+              style: CustomTextStyles.text.copyWith(
+                color: AppColors.pureWhite,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
         ],
       ),
     ),

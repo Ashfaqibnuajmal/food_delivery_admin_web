@@ -19,6 +19,7 @@ class DuePaymentTableBody extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: AppColors.darkBlue.withOpacity(0.4),
           borderRadius: BorderRadius.circular(10),
         ),

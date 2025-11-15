@@ -1,11 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/functions/image_functions.dart';
 import 'package:user_app/core/provider/pick_image.dart';
-import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
+import 'package:user_app/features/categories/controller/category_controller.dart';
 
 Future<void> showEditCategoryDialog({
   required BuildContext context,
@@ -15,11 +14,12 @@ Future<void> showEditCategoryDialog({
 }) async {
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController(text: currentName);
+  final service = CategoryController();
 
   await showDialog(
     context: context,
     builder: (context) {
-      final imageProvider = Provider.of<ImageProviderModel>(context);
+      final imageProvider = context.watch<ImageProviderModel>();
 
       return Dialog(
         backgroundColor: AppColors.deepBlue,
@@ -33,16 +33,9 @@ Future<void> showEditCategoryDialog({
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 🖼 Image Picker
+                  /// 🖼 Image Picker UI (logic moved to service)
                   GestureDetector(
-                    onTap: () async {
-                      try {
-                        final image = await pickImage();
-                        imageProvider.setImage(image);
-                      } catch (e) {
-                        log(e.toString());
-                      }
-                    },
+                    onTap: () => service.pickImageForEdit(context),
                     child: Container(
                       height: 200,
                       width: double.infinity,
@@ -75,26 +68,26 @@ Future<void> showEditCategoryDialog({
 
                   const SizedBox(height: 20),
 
-                  // 📝 Name Field
+                  /// 📝 Name Field (validation moved to service)
                   TextFormField(
                     controller: nameController,
-                    keyboardType: TextInputType.text,
                     decoration: inputDecoration("Category Name"),
-                    validator: (value) => validator(value, "Name"),
+                    validator: service.validateName,
                     style: const TextStyle(color: AppColors.pureWhite),
                   ),
 
                   const SizedBox(height: 25),
 
-                  // 💾 Save Button
+                  /// 💾 Save Button (logic moved to service)
                   ElevatedButton(
                     onPressed: () {
                       if (!formKey.currentState!.validate()) return;
 
-                      final newName = nameController.text.trim();
-                      onSave(newName);
-
-                      Navigator.pop(context);
+                      service.handleSave(
+                        context: context,
+                        controller: nameController,
+                        onSave: onSave,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.lightBlue,

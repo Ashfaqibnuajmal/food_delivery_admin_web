@@ -7,9 +7,9 @@ import 'package:user_app/core/widgets/cutom_snackbar.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
-class Header extends StatelessWidget {
+class CategoryHeader extends StatelessWidget {
   final TextEditingController catagorynameController;
-  const Header({super.key, required this.catagorynameController});
+  const CategoryHeader({super.key, required this.catagorynameController});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class Header extends StatelessWidget {
     custemAddDialog(
       context: context,
       controller: catagorynameController,
-      onpressed: () async {
+      onPressed: () async {
         final imageProvider = context.read<ImageProviderModel>();
         final image = imageProvider.pickedImage;
         final name = catagorynameController.text.trim();

@@ -1,24 +1,18 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
-import 'package:user_app/features/due payment/data/model/payment_entry_model.dart';
-import 'package:user_app/features/due payment/data/services/due_payment_services.dart';
-import 'package:uuid/uuid.dart';
+import 'package:user_app/features/due%20payment/controller/due_entry_controller.dart';
 
 Future<void> customAddEntryDialog({
   required BuildContext context,
   required String userId,
 }) async {
-  final service = DuePaymentService();
   final formKey = GlobalKey<FormState>();
-
   DateTime? selectedDate;
   String? status;
   double? amount;
   String? notes;
-
   bool showDateError = false;
 
   return showDialog(
@@ -56,27 +50,12 @@ Future<void> customAddEntryDialog({
                           ),
                         ),
                         onPressed: () async {
-                          DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                            builder: (context, child) => Theme(
-                              data: ThemeData.dark().copyWith(
-                                colorScheme: const ColorScheme.dark(
-                                  primary: AppColors.lightBlue,
-                                  surface: AppColors.deepBlue,
-                                  onSurface: AppColors.pureWhite,
-                                ),
-                              ),
-                              child: child!,
-                            ),
+                          final picked = await DuePaymentController.pickDate(
+                            context,
                           );
                           if (picked != null) {
-                            setState(() {
-                              selectedDate = picked;
-                              showDateError = false; // hide error after picking
-                            });
+                            selectedDate = picked;
+                            setState(() => showDateError = false);
                           }
                         },
                         icon: const Icon(
@@ -91,7 +70,6 @@ Future<void> customAddEntryDialog({
                         ),
                       ),
 
-                      // Only show AFTER submit click
                       if (showDateError)
                         const Padding(
                           padding: EdgeInsets.only(top: 6),
@@ -100,7 +78,6 @@ Future<void> customAddEntryDialog({
                             style: TextStyle(color: Colors.red, fontSize: 13),
                           ),
                         ),
-
                       const SizedBox(height: 20),
 
                       // 🔹 Status Dropdown
@@ -112,14 +89,9 @@ Future<void> customAddEntryDialog({
                           "Select a status",
                           style: TextStyle(color: Colors.white),
                         ),
-                        items: const [
-                          DropdownMenuItem(value: "Paid", child: Text("Paid")),
-                          DropdownMenuItem(
-                            value: "Consumed",
-                            child: Text("Consumed"),
-                          ),
-                        ],
-                        validator: (value) => validator(value, "Status"),
+                        items: DuePaymentController.statusItems,
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Status"),
                         onChanged: (val) => status = val,
                       ),
                       const SizedBox(height: 20),
@@ -129,7 +101,8 @@ Future<void> customAddEntryDialog({
                         keyboardType: TextInputType.number,
                         decoration: inputDecoration("Enter Amount"),
                         style: const TextStyle(color: AppColors.pureWhite),
-                        validator: (value) => validator(value, "Amount"),
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Amount"),
                         onChanged: (v) =>
                             amount = double.tryParse(v.trim()) ?? 0.0,
                       ),
@@ -140,7 +113,8 @@ Future<void> customAddEntryDialog({
                         keyboardType: TextInputType.text,
                         decoration: inputDecoration("Notes"),
                         style: const TextStyle(color: AppColors.pureWhite),
-                        validator: (value) => validator(value, "Notes"),
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Notes"),
                         onChanged: (v) => notes = v.trim(),
                       ),
                       const SizedBox(height: 30),
@@ -157,35 +131,17 @@ Future<void> customAddEntryDialog({
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () async {
-                          // Normal field validation
-                          if (!formKey.currentState!.validate()) {
-                            return;
-                          }
-
-                          // Date validation
-                          if (selectedDate == null) {
-                            setState(() => showDateError = true);
-                            return;
-                          }
-
-                          final entryId = const Uuid().v4();
-                          final entry = PaymentEntryModel(
-                            entryId: entryId,
+                        onPressed: () {
+                          DuePaymentController.handleAddEntry(
+                            context: context,
+                            formKey: formKey,
+                            selectedDate: selectedDate,
+                            status: status,
+                            amount: amount,
+                            notes: notes,
                             userId: userId,
-                            date: selectedDate!,
-                            status: status!,
-                            amount: amount!,
-                            notes: notes!,
+                            setShowDateError: (val) => showDateError = val,
                           );
-
-                          try {
-                            await service.addPaymentEntry(entry);
-                            log("✅ Entry added for user $userId");
-                            if (context.mounted) Navigator.pop(context);
-                          } catch (e) {
-                            log("❌ Error adding entry: $e");
-                          }
                         },
                         child: const Text(
                           "Add Entry",

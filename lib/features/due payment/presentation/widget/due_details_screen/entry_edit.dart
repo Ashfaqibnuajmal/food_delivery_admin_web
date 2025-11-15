@@ -1,19 +1,15 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/due payment/data/model/payment_entry_model.dart';
-import 'package:user_app/features/due payment/data/services/due_payment_services.dart';
+import 'package:user_app/features/due%20payment/controller/due_entry_controller.dart';
 
 Future<void> customEditEntryDialog({
   required BuildContext context,
   required PaymentEntryModel currentEntry,
 }) async {
-  final service = DuePaymentService();
   final formKey = GlobalKey<FormState>();
-
-  // Local variables
   DateTime? selectedDate = currentEntry.date;
   String? status = currentEntry.status;
   double amount = currentEntry.amount;
@@ -21,7 +17,6 @@ Future<void> customEditEntryDialog({
 
   bool showDateError = false;
 
-  // Controllers
   final amountController = TextEditingController(
     text: currentEntry.amount.toString(),
   );
@@ -62,32 +57,14 @@ Future<void> customEditEntryDialog({
                           ),
                         ),
                         onPressed: () async {
-                          try {
-                            DateTime? picked = await showDatePicker(
-                              context: context,
-                              initialDate: selectedDate!,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime(2100),
-                              builder: (context, child) => Theme(
-                                data: ThemeData.dark().copyWith(
-                                  colorScheme: const ColorScheme.dark(
-                                    primary: AppColors.lightBlue,
-                                    surface: AppColors.deepBlue,
-                                    onSurface: AppColors.pureWhite,
-                                  ),
-                                ),
-                                child: child!,
-                              ),
-                            );
-
-                            if (picked != null) {
-                              setState(() {
-                                selectedDate = picked;
-                                showDateError = false;
-                              });
-                            }
-                          } catch (e) {
-                            log("Date Picker Error: $e");
+                          final picked =
+                              await DuePaymentController.pickEditDate(
+                                context,
+                                selectedDate!,
+                              );
+                          if (picked != null) {
+                            selectedDate = picked;
+                            setState(() => showDateError = false);
                           }
                         },
                         icon: const Icon(
@@ -108,44 +85,19 @@ Future<void> customEditEntryDialog({
                             style: TextStyle(color: Colors.red, fontSize: 13),
                           ),
                         ),
-
                       const SizedBox(height: 20),
 
-                      // 🔹 STATUS DROPDOWN
+                      // 🔹 STATUS
                       DropdownButtonFormField<String>(
                         decoration: inputDecoration("Status"),
                         dropdownColor: AppColors.deepBlue,
-                        initialValue: status, // pre-selected value
+                        initialValue: status,
                         style: const TextStyle(color: AppColors.pureWhite),
-                        items: const [
-                          DropdownMenuItem(
-                            value: "Paid",
-                            child: Text(
-                              "Paid",
-                              style: TextStyle(color: AppColors.pureWhite),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: "Consumed",
-                            child: Text(
-                              "Consumed",
-                              style: TextStyle(color: AppColors.pureWhite),
-                            ),
-                          ),
-                        ],
-
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Status is required";
-                          }
-                          return null;
-                        },
-
-                        onChanged: (val) {
-                          setState(() => status = val);
-                        },
+                        items: DuePaymentController.statusItems,
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Status"),
+                        onChanged: (val) => status = val,
                       ),
-
                       const SizedBox(height: 20),
 
                       // 🔹 AMOUNT
@@ -154,21 +106,11 @@ Future<void> customEditEntryDialog({
                         keyboardType: TextInputType.number,
                         decoration: inputDecoration("Enter Amount"),
                         style: const TextStyle(color: AppColors.pureWhite),
-
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Amount is required";
-                          }
-                          if (double.tryParse(value.trim()) == null) {
-                            return "Enter a valid number";
-                          }
-                          return null;
-                        },
-
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Amount"),
                         onChanged: (v) =>
                             amount = double.tryParse(v.trim()) ?? amount,
                       ),
-
                       const SizedBox(height: 20),
 
                       // 🔹 NOTES
@@ -177,15 +119,10 @@ Future<void> customEditEntryDialog({
                         keyboardType: TextInputType.text,
                         decoration: inputDecoration("Notes"),
                         style: const TextStyle(color: AppColors.pureWhite),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Notes are required";
-                          }
-                          return null;
-                        },
+                        validator: (value) =>
+                            DuePaymentController.validator(value, "Notes"),
                         onChanged: (v) => notes = v.trim(),
                       ),
-
                       const SizedBox(height: 30),
 
                       // 🔹 UPDATE BUTTON
@@ -200,39 +137,17 @@ Future<void> customEditEntryDialog({
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () async {
-                          // Date validation
-                          if (selectedDate == null) {
-                            setState(() => showDateError = true);
-                            return;
-                          }
-
-                          if (!formKey.currentState!.validate()) return;
-
-                          try {
-                            final updatedEntry = PaymentEntryModel(
-                              entryId: currentEntry.entryId,
-                              userId: currentEntry.userId,
-                              date: selectedDate!,
-                              status: status!,
-                              amount: amount,
-                              notes: notes,
-                            );
-
-                            await service.editPaymentEntry(updatedEntry);
-                            log("✅ Updated entry ${currentEntry.entryId}");
-
-                            if (context.mounted) Navigator.pop(context);
-                          } catch (e) {
-                            log("❌ Error updating entry: $e");
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Error updating entry"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
+                        onPressed: () {
+                          DuePaymentController.handleUpdateEntry(
+                            context: context,
+                            formKey: formKey,
+                            currentEntry: currentEntry,
+                            selectedDate: selectedDate,
+                            status: status,
+                            amount: amount,
+                            notes: notes,
+                            setShowDateError: (val) => showDateError = val,
+                          );
                         },
                         child: const Text(
                           "Update Entry",

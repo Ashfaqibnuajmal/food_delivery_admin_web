@@ -20,9 +20,9 @@ class CatagoriesScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Header(catagorynameController: catagorynameController),
+              CategoryHeader(catagorynameController: catagorynameController),
               const SizedBox(height: 10),
-              Body(catagorynameController: catagorynameController),
+              CategoryBody(catagorynameController: catagorynameController),
             ],
           ),
         ),

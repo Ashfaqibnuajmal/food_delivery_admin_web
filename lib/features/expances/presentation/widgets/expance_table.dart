@@ -29,6 +29,7 @@ class ExpanceTable extends StatelessWidget {
 
         return Container(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: AppColors.lightBlue.withOpacity(0.1),
             border: Border.all(color: AppColors.deepBlue, width: 2),
             borderRadius: BorderRadius.circular(30),

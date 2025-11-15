@@ -4,6 +4,7 @@ import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/due%20payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
+import 'package:user_app/features/users/controller/user_controller.dart';
 import 'package:user_app/features/users/data/model/user_model.dart';
 import 'package:user_app/features/users/data/services/user_services.dart';
 import 'package:user_app/features/users/presentation/widget/user_cell_text.dart';
@@ -30,10 +31,10 @@ class UserTable extends StatelessWidget {
             );
           }
 
-          // Update provider directly
+          // Update provider with fetched users
           context.read<UserSearchProvider>().setUsers(snapshot.data!);
 
-          // Build table body that listens to provider
+          // Build table body
           return const _UserTableBody();
         },
       ),
@@ -41,18 +42,17 @@ class UserTable extends StatelessWidget {
   }
 }
 
-// ignore: unused_element
 class _UserTableBody extends StatelessWidget {
   const _UserTableBody();
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<UserSearchProvider>();
-    final userService = UserServices(); // for block/unblock actions
     final filtered = provider.filteredUsers;
 
     return Container(
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.lightBlue.withOpacity(0.1),
         border: Border.all(color: AppColors.deepBlue, width: 2),
         borderRadius: BorderRadius.circular(30),
@@ -86,58 +86,64 @@ class _UserTableBody extends StatelessWidget {
               itemCount: filtered.length,
               itemBuilder: (context, i) {
                 final user = filtered[i];
-                final isActive = user.status.toLowerCase() == 'active';
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const BoxDecoration(),
-                  child: Row(
-                    children: [
-                      DataCellText(user.name),
-                      DataCellText(user.phone),
-                      DataCellText(user.email),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            isActive ? 'Active' : 'Blocked',
-                            style: CustomTextStyles.userStatus(isActive),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isActive
-                                  ? AppColors.deepBlue
-                                  : Colors.green,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 8,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (isActive) {
-                                userService.blockUser(user.uid);
-                              } else {
-                                userService.unblockUser(user.uid);
-                              }
-                            },
-                            child: Text(
-                              isActive ? 'Block' : 'Unblock',
-                              style: const TextStyle(
-                                color: AppColors.pureWhite,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return UserTableRow(user: user);
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Each row UI only, logic-free
+class UserTableRow extends StatelessWidget {
+  final dynamic user;
+
+  const UserTableRow({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final isActive = user.status.toLowerCase() == 'active';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          DataCellText(user.name),
+          DataCellText(user.phone),
+          DataCellText(user.email),
+          Expanded(
+            child: Center(
+              child: Text(
+                isActive ? 'Active' : 'Blocked',
+                style: CustomTextStyles.userStatus(isActive),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isActive ? AppColors.deepBlue : Colors.green,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () => UserTableLogic.handleUserAction(
+                  context: context,
+                  user: user,
+                  isActive: isActive,
+                ),
+                child: Text(
+                  isActive ? 'Block' : 'Unblock',
+                  style: const TextStyle(color: AppColors.pureWhite),
+                ),
+              ),
             ),
           ),
         ],

@@ -1,24 +1,23 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/core/widgets/network_image_placeolder.dart';
+import 'package:user_app/features/categories/controller/category_controller.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
-import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
 // ignore: must_be_immutable
-class Body extends StatelessWidget {
-  TextEditingController catagorynameController = TextEditingController();
+class CategoryBody extends StatelessWidget {
+  const CategoryBody({super.key, required this.catagorynameController});
 
-  Body({super.key, required this.catagorynameController});
-  double sidebarWidth = 250;
+  final TextEditingController catagorynameController;
+  final double sidebarWidth = 250;
 
   @override
   Widget build(BuildContext context) {
+    final logic = CategoryController();
+
     return Center(
       child: SizedBox(
         width: double.infinity,
@@ -38,8 +37,8 @@ class Body extends StatelessWidget {
                     ),
                   );
                 }
+
                 if (snapshot.hasError) {
-                  log(snapshot.error.toString());
                   return Center(
                     child: Text(
                       "Error: ${snapshot.error}",
@@ -47,6 +46,7 @@ class Body extends StatelessWidget {
                     ),
                   );
                 }
+
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text(
@@ -119,17 +119,17 @@ class Body extends StatelessWidget {
                           ),
                         ),
 
-                        // Body Rows
+                        // Content rows
                         ListView.builder(
                           itemCount: categories.length,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             final value = categories[index];
+
                             return Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: AppColors.lightBlue.withOpacity(0.1),
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppColors.mediumBlue.withOpacity(
@@ -141,6 +141,7 @@ class Body extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
+                                  // Image
                                   Expanded(
                                     child: Center(
                                       child: ShimmerNetworkImage(
@@ -149,20 +150,10 @@ class Body extends StatelessWidget {
                                         height: 40,
                                         borderRadius: BorderRadius.circular(8),
                                         fit: BoxFit.cover,
-                                        // optional: custom error widget
-                                        errorWidget: Container(
-                                          width: 40,
-                                          height: 40,
-                                          color: AppColors.lightGrey,
-                                          child: const Icon(
-                                            Icons.image_not_supported,
-                                            color: AppColors.pureWhite,
-                                            size: 20,
-                                          ),
-                                        ),
                                       ),
                                     ),
                                   ),
+
                                   // Name
                                   Expanded(
                                     child: Center(
@@ -180,54 +171,11 @@ class Body extends StatelessWidget {
                                   Expanded(
                                     child: Center(
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          catagorynameController =
-                                              TextEditingController(
-                                                text: value.name,
-                                              );
-                                          custemAddDialog(
-                                            context: context,
-                                            oldImage: value.imageUrl,
-                                            controller: catagorynameController,
-                                            onpressed: () async {
-                                              final newImage = context
-                                                  .read<ImageProviderModel>()
-                                                  .pickedImage;
-                                              final updatedCatagory = CategoryModel(
-                                                categoryUid: value.categoryUid,
-                                                imageUrl: newImage != null
-                                                    ? await context
-                                                              .read<
-                                                                CategorySevices
-                                                              >()
-                                                              .sendImageToCloudinary(
-                                                                newImage,
-                                                              ) ??
-                                                          value.imageUrl
-                                                    : value.imageUrl,
-                                                name:
-                                                    catagorynameController.text,
-                                              );
-                                              // ignore: use_build_context_synchronously
-                                              context
-                                                  .read<CategorySevices>()
-                                                  .editCategory(
-                                                    updatedCatagory,
-                                                    value.imageUrl,
-                                                  );
-                                              // ignore: use_build_context_synchronously
-                                              if (Navigator.canPop(context)) {
-                                                catagorynameController.clear();
-                                                // ignore: use_build_context_synchronously
-                                                context
-                                                    .read<ImageProviderModel>()
-                                                    .clearImage();
-                                                // ignore: use_build_context_synchronously
-                                                Navigator.pop(context);
-                                              }
-                                            },
-                                          );
-                                        },
+                                        onPressed: () => logic.handleEdit(
+                                          context,
+                                          value,
+                                          catagorynameController,
+                                        ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.deepBlue,
                                           foregroundColor: AppColors.pureWhite,
@@ -250,14 +198,8 @@ class Body extends StatelessWidget {
                                   Expanded(
                                     child: Center(
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          customDeleteDialog(context, () {
-                                            context
-                                                .read<CategorySevices>()
-                                                .deleteCategory(value);
-                                            Navigator.pop(context);
-                                          });
-                                        },
+                                        onPressed: () =>
+                                            logic.handleDelete(context, value),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.red,
                                           foregroundColor: AppColors.pureWhite,

@@ -17,8 +17,10 @@ class DuePaymentRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: AppColors.darkBlue.withOpacity(0.3),
         border: Border(
+          // ignore: deprecated_member_use
           bottom: BorderSide(color: AppColors.deepBlue.withOpacity(0.8)),
         ),
       ),

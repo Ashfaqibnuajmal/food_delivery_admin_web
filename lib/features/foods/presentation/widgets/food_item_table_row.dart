@@ -1,27 +1,23 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/core/widgets/network_image_placeolder.dart';
+import 'package:user_app/features/foods/controller/food_controller.dart';
 import 'package:user_app/features/foods/data/model/food_item_model.dart';
-import 'package:user_app/features/foods/data/services/food_item_services.dart';
-import 'package:user_app/features/foods/presentation/widgets/food_item_edit_dilog.dart';
 
-// ignore: unused_element
 class FoodItemTableRow extends StatelessWidget {
   final FoodItemModel food;
+
   const FoodItemTableRow({super.key, required this.food});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-      // ignore: deprecated_member_use
       decoration: BoxDecoration(color: AppColors.lightBlue.withOpacity(0.08)),
       child: Row(
         children: [
+          // Image
           Expanded(
             flex: 2,
             child: Center(
@@ -44,6 +40,7 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Name & Info
           Expanded(
             flex: 3,
             child: Center(
@@ -54,6 +51,7 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Price
           Expanded(
             flex: 2,
             child: Center(
@@ -63,16 +61,14 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Category
           Expanded(
             flex: 2,
             child: Center(
-              child: Text(
-                textAlign: TextAlign.center,
-                food.category,
-                style: CustomTextStyles.text,
-              ),
+              child: Text(food.category, style: CustomTextStyles.text),
             ),
           ),
+          // Type
           Expanded(
             flex: 2,
             child: Center(
@@ -82,6 +78,7 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Offer
           Expanded(
             flex: 2,
             child: Center(
@@ -91,6 +88,7 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Half Available
           Expanded(
             flex: 3,
             child: Center(
@@ -102,6 +100,7 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
+          // Best Seller
           Expanded(
             flex: 2,
             child: Center(
@@ -112,7 +111,7 @@ class FoodItemTableRow extends StatelessWidget {
             ),
           ),
 
-          // ✏️ Edit Button
+          // Edit Button
           Expanded(
             flex: 2,
             child: Center(
@@ -125,73 +124,13 @@ class FoodItemTableRow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () async {
-                  await customEditFoodItemDialog(
-                    context: context,
-                    food: food,
-                    onUpdate:
-                        ({
-                          required Uint8List? imageBytes,
-                          required String? imageUrl,
-                          required String name,
-                          required int prepTimeMinutes,
-                          required double calories,
-                          required String description,
-                          required double price,
-                          required String category,
-                          required bool isCompo,
-                          required bool isTodayOffer,
-                          required bool isHalfAvailable,
-                          required double? halfPrice,
-                          required bool isBestSeller,
-                        }) async {
-                          final foodServices = context.read<FoodItemServices>();
-                          try {
-                            await foodServices.editFoodItem(
-                              food.copyWith(
-                                name: name,
-                                prepTimeMinutes: prepTimeMinutes,
-                                calories: calories,
-                                description: description,
-                                price: price,
-                                category: category,
-                                isCompo: isCompo,
-                                isTodayOffer: isTodayOffer,
-                                isHalfAvailable: isHalfAvailable,
-                                halfPrice: halfPrice,
-                                isBestSeller: isBestSeller,
-                              ),
-                              newImageBytes: imageBytes,
-                              oldImageUrl: food.imageUrl,
-                            );
-
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Food item updated successfully!",
-                                ),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } catch (e) {
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Error updating food item: $e"),
-                                backgroundColor: Colors.redAccent,
-                              ),
-                            );
-                          }
-                        },
-                  );
-                },
+                onPressed: () => FoodController.editFood(context, food),
                 child: const Text("Edit", style: TextStyle(fontSize: 12)),
               ),
             ),
           ),
 
-          // 🗑 Delete Button
+          // Delete Button
           Expanded(
             flex: 2,
             child: Center(
@@ -204,13 +143,7 @@ class FoodItemTableRow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () {
-                  customDeleteDialog(context, () async {
-                    await context.read<FoodItemServices>().deleteFoodItem(food);
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context);
-                  });
-                },
+                onPressed: () => FoodController.deleteFood(context, food),
                 child: const Text("Delete", style: TextStyle(fontSize: 12)),
               ),
             ),

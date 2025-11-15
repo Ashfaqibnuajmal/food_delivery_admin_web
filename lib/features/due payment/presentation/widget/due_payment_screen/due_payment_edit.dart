@@ -1,10 +1,9 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/due payment/data/model/due_user_model.dart';
-import 'package:user_app/features/due payment/data/services/due_payment_services.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
+import 'package:user_app/features/due payment/data/model/due_user_model.dart';
+import 'package:user_app/features/due%20payment/controller/due_user_controller.dart';
 
 Future<void> customEditDuePaymentDialog({
   required BuildContext context,
@@ -15,8 +14,6 @@ Future<void> customEditDuePaymentDialog({
   final nameController = TextEditingController(text: currentUser.name);
   final phoneController = TextEditingController(text: currentUser.phone);
   final emailController = TextEditingController(text: currentUser.email);
-
-  final duePaymentService = DuePaymentService();
 
   return showDialog(
     context: context,
@@ -47,8 +44,9 @@ Future<void> customEditDuePaymentDialog({
                     controller: nameController,
                     keyboardType: TextInputType.text,
                     decoration: inputDecoration("Name"),
-                    validator: (value) => validator(value, "Name"),
                     style: CustomTextStyles.text,
+                    validator: (value) =>
+                        DueUserController.validator(value, "Name"),
                   ),
                   const SizedBox(height: 20),
 
@@ -57,8 +55,9 @@ Future<void> customEditDuePaymentDialog({
                     controller: phoneController,
                     keyboardType: TextInputType.phone,
                     decoration: inputDecoration("Phone number"),
-                    validator: (value) => validator(value, "Phone number"),
                     style: CustomTextStyles.text,
+                    validator: (value) =>
+                        DueUserController.validator(value, "Phone number"),
                   ),
                   const SizedBox(height: 20),
 
@@ -67,8 +66,9 @@ Future<void> customEditDuePaymentDialog({
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: inputDecoration("Email"),
-                    validator: (value) => validator(value, "Email"),
                     style: CustomTextStyles.text,
+                    validator: (value) =>
+                        DueUserController.validator(value, "Email"),
                   ),
                   const SizedBox(height: 30),
 
@@ -85,26 +85,15 @@ Future<void> customEditDuePaymentDialog({
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () async {
-                        if (!formKey.currentState!.validate()) {
-                          return; // ❌ validations failed
-                        }
-
-                        final updatedUser = DueUserModel(
-                          userId: currentUser.userId,
-                          name: nameController.text.trim(),
-                          phone: phoneController.text.trim(),
-                          email: emailController.text.trim(),
-                          balance: currentUser.balance,
+                      onPressed: () {
+                        DueUserController.handleUpdateUser(
+                          context: context,
+                          formKey: formKey,
+                          currentUser: currentUser,
+                          nameController: nameController,
+                          phoneController: phoneController,
+                          emailController: emailController,
                         );
-
-                        try {
-                          await duePaymentService.editDueUser(updatedUser);
-                          log("✅ User updated: ${updatedUser.name}");
-                          if (context.mounted) Navigator.pop(context);
-                        } catch (e) {
-                          log("❌ Error editing user: $e");
-                        }
                       },
                       child: const Text(
                         "Update",

@@ -18,6 +18,7 @@ class ExpenseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // ignore: deprecated_member_use
       color: AppColors.lightBlue.withOpacity(0.1), // row background color
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
