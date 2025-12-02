@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/features/chat/data/services/chat_services.dart';
 import 'message_bubble.dart';
 
 class ChatWindow extends StatefulWidget {
   final String userName;
+  final String userId; // <-- for chatId
+  final String adminId; // <-- your admin id
   final String? imageUrl;
 
-  const ChatWindow({super.key, required this.userName, this.imageUrl});
+  const ChatWindow({
+    super.key,
+    required this.userName,
+    required this.userId,
+    required this.adminId,
+    this.imageUrl,
+  });
 
   @override
   State<ChatWindow> createState() => _ChatWindowState();
@@ -14,12 +24,20 @@ class ChatWindow extends StatefulWidget {
 
 class _ChatWindowState extends State<ChatWindow> {
   final TextEditingController _messageController = TextEditingController();
+  late String chatId;
+
+  @override
+  void initState() {
+    super.initState();
+    chatId = widget.userId; // CHAT ID = USER ID (your current logic)
+  }
 
   @override
   Widget build(BuildContext context) {
+    final chatService = Provider.of<ChatServices>(context, listen: false);
+
     return Stack(
       children: [
-        // BACKGROUND IMAGE
         Positioned.fill(
           child: Image.asset(
             "assets/chatbackgroundimage.jpg",
@@ -27,9 +45,9 @@ class _ChatWindowState extends State<ChatWindow> {
           ),
         ),
 
-        /// CHAT UI LAYER
         Column(
           children: [
+            // TOP BAR
             Container(
               height: 60,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -70,21 +88,42 @@ class _ChatWindowState extends State<ChatWindow> {
               ),
             ),
 
-            // CHAT MESSAGES LIST
+            // LIVE CHAT MESSAGES
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(12),
-                children: const [
-                  MessageBubble(isMe: false, message: "Hello, good morning 👋"),
-                  MessageBubble(
-                    isMe: true,
-                    message: "Hi, good morning! How can I help you today?",
-                  ),
-                ],
+              child: StreamBuilder(
+                stream: chatService.fetchMessages(chatId),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  }
+
+                  final messages = snapshot.data!;
+
+                  return ListView(
+                    padding: const EdgeInsets.all(12),
+                    children: [
+                      /// STATIC USER MESSAGE (your requirement)
+                      const MessageBubble(
+                        isMe: false,
+                        message: "Hello, good morning 👋",
+                      ),
+
+                      /// REAL-TIME ADMIN MESSAGES FROM FIRESTORE
+                      ...messages.map(
+                        (msg) => MessageBubble(
+                          isMe: msg.senderId == widget.adminId,
+                          message: msg.message,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
 
-            // MESSAGE INPUT FIELD + SEND BUTTON
+            // INPUT AND SEND
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
@@ -116,12 +155,17 @@ class _ChatWindowState extends State<ChatWindow> {
                     ),
                   ),
                   const SizedBox(width: 8),
+
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (_messageController.text.trim().isEmpty) return;
 
-                      // STATIC ACTION NOW — Firebase later
-                      debugPrint("Message Sent => ${_messageController.text}");
+                      await chatService.sendMessage(
+                        chatId: chatId,
+                        senderId: widget.adminId,
+                        receiverId: widget.userId,
+                        message: _messageController.text.trim(),
+                      );
 
                       _messageController.clear();
                     },

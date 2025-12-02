@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/core/constants/admin_id.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/chat/data/services/chat_services.dart';
 import 'package:user_app/features/chat/presentation/widgets/chat_searchbar.dart';
@@ -148,7 +149,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           ],
                         ),
                       )
-                    : ChatWindow(userName: selectedUserName!),
+                    : ChatWindow(
+                        userName: selectedUserName!,
+                        userId: selectedUserId!,
+                        adminId: adminId,
+                      ),
               ),
             ),
           ],

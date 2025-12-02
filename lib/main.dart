@@ -6,6 +6,7 @@ import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/features/auth/provider/login_provider.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
+import 'package:user_app/features/chat/data/services/chat_services.dart';
 import 'package:user_app/features/expances/provider/expance_provider.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 import 'package:user_app/features/foods/provider/dialogstateprovider.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AddFoodDialogProvider>(
           create: (_) => AddFoodDialogProvider(),
         ),
+        ChangeNotifierProvider(create: (_) => ChatServices()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
