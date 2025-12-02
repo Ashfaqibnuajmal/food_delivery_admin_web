@@ -1,63 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/core/theme/web_color.dart';
 
 class UserChatTile extends StatelessWidget {
-  final String name;
-  final String lastMessage;
-  final String time;
-  final int unreadCount;
-  final String imageUrl;
+  final String name, message, time;
+  final String? imageUrl; // allow null
+  final int unread;
   final VoidCallback? onTap;
 
   const UserChatTile({
     super.key,
     required this.name,
-    required this.lastMessage,
+    required this.message,
     required this.time,
-    this.unreadCount = 0,
-    this.imageUrl = '',
+    required this.unread,
+    this.imageUrl,
     this.onTap,
   });
-
-  Widget _buildAvatar() {
-    if (imageUrl.isNotEmpty) {
-      return CircleAvatar(radius: 24, backgroundImage: NetworkImage(imageUrl));
-    }
-
-    // fallback avatar with name initial
-    return CircleAvatar(
-      radius: 24,
-      backgroundColor: Colors.blueGrey.shade100,
-      child: Text(
-        name.isNotEmpty ? name[0].toUpperCase() : '?',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      hoverColor: Colors.grey.shade100,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      hoverColor: AppColors.mediumBlue,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
         child: Row(
           children: [
-            _buildAvatar(),
-            const SizedBox(width: 14),
+            CircleAvatar(
+              backgroundColor: AppColors.lightBlue,
+              backgroundImage: (imageUrl != null && imageUrl!.isNotEmpty)
+                  ? NetworkImage(imageUrl!)
+                  : null,
+              child: (imageUrl == null || imageUrl!.isEmpty)
+                  ? Text(
+                      (name.isNotEmpty ? name[0] : '?').toUpperCase(), // FIXED
+                    )
+                  : null,
+            ),
 
-            /// NAME + MESSAGE + TIME + UNREAD
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Name + Time row
                   Row(
                     children: [
                       Expanded(
                         child: Text(
                           name,
                           style: const TextStyle(
+                            color: AppColors.pureWhite,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -66,46 +58,41 @@ class UserChatTile extends StatelessWidget {
                       Text(
                         time,
                         style: TextStyle(
+                          color: AppColors.pureWhite.withOpacity(0.7),
                           fontSize: 12,
-                          color: Colors.grey.shade600,
                         ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 6),
-
-                  /// Last message + unread badge
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          lastMessage,
-                          maxLines: 1,
+                          message,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
+                            color: AppColors.pureWhite.withOpacity(0.85),
                             fontSize: 13,
-                            color: Colors.grey.shade700,
                           ),
                         ),
                       ),
-
-                      if (unreadCount > 0)
+                      if (unread > 0)
                         Container(
-                          margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.redAccent,
-                            borderRadius: BorderRadius.circular(16),
+                            color: AppColors.mediumBlue.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            unreadCount.toString(),
+                            unread.toString(),
                             style: const TextStyle(
+                              color: AppColors.pureWhite,
                               fontSize: 12,
-                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),

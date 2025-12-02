@@ -78,4 +78,11 @@ class ChatServices extends ChangeNotifier {
       log("Error marking message as read:$e");
     }
   }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Stream<List<Map<String, dynamic>>> getAllUsers() {
+    return _firestore.collection("Users").snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
 }
