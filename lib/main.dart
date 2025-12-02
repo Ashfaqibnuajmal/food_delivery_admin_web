@@ -1,16 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:user_app/core/constants/firebase_options.dart';
 import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
-import 'package:user_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:user_app/features/auth/provider/login_provider.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
 import 'package:user_app/features/expances/provider/expance_provider.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 import 'package:user_app/features/foods/provider/dialogstateprovider.dart';
+import 'package:user_app/features/home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +50,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const LoginScreen(),
+        home: const HomePage(),
       ),
     );
   }

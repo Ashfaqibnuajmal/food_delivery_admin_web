@@ -2,7 +2,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/categories/presentation/screens/catagories_screen.dart';
-import 'package:user_app/features/chat/chat_screen.dart' show ChatScreen;
+import 'package:user_app/features/chat/presentation/screen/chat_list_screen.dart';
 import 'package:user_app/features/dashboard/dashboard_screen.dart';
 import 'package:user_app/features/due%20payment/presentation/screens/due_payment_screen.dart';
 import 'package:user_app/features/expances/presentation/screens/expance_screen.dart';
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                 const OrderScreen(),
                 const FooditemScreen(),
                 const UsersScreen(),
-                const ChatScreen(),
+                const ChatListScreen(),
                 CatagoriesScreen(),
                 const ExpanceScreen(),
                 const DuePaymentScreen(),
