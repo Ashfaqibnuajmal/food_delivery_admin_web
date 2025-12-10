@@ -4,10 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/features/foods/data/model/food_item_model.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
+
+// IMPORTANT: This file contains the REAL edit dialog
 import 'package:user_app/features/foods/presentation/widgets/food_item_add_dilog.dart';
+import 'package:user_app/features/foods/presentation/widgets/food_item_edit_dilog.dart';
 
 class FoodController {
-  /// Handles opening the add-food dialog and submitting the item
+  /// ADD FOOD
   static Future<void> showAddFoodDialog({
     required BuildContext context,
     required FoodItemServices foodServices,
@@ -71,7 +74,7 @@ class FoodController {
     );
   }
 
-  /// Show edit dialog
+  /// EDIT FOOD (FIXED)
   static Future<void> editFood(BuildContext context, FoodItemModel food) async {
     await customEditFoodItemDialog(
       context: context,
@@ -93,6 +96,7 @@ class FoodController {
             required bool isBestSeller,
           }) async {
             final foodServices = context.read<FoodItemServices>();
+
             try {
               await foodServices.editFoodItem(
                 food.copyWith(
@@ -134,32 +138,11 @@ class FoodController {
     );
   }
 
-  /// Show delete dialog
+  /// DELETE FOOD
   static void deleteFood(BuildContext context, FoodItemModel food) {
     customDeleteDialog(context, () async {
       await context.read<FoodItemServices>().deleteFoodItem(food);
       if (context.mounted) Navigator.pop(context);
     });
   }
-
-  static Future<void> customEditFoodItemDialog({
-    required BuildContext context,
-    required FoodItemModel food,
-    required Future<Null> Function({
-      required double calories,
-      required String category,
-      required String description,
-      required double? halfPrice,
-      required Uint8List? imageBytes,
-      required String? imageUrl,
-      required bool isBestSeller,
-      required bool isCompo,
-      required bool isHalfAvailable,
-      required bool isTodayOffer,
-      required String name,
-      required int prepTimeMinutes,
-      required double price,
-    })
-    onUpdate,
-  }) async {}
 }

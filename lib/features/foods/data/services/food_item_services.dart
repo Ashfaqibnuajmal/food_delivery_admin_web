@@ -9,15 +9,11 @@ import 'package:user_app/features/foods/data/model/food_item_model.dart';
 class FoodItemServices extends ChangeNotifier {
   final foodItemCollection = FirebaseFirestore.instance.collection("FoodItems");
 
-  // 🔹 Cloudinary credentials
   static const cloudName = "dsuwmcmw4";
   static const cloudPreset = "flutter_uploads";
   static const cloudApiKey = "837695524881733";
   static const cloudApiSecretKey = "BMxWLGuxc0qhl2QAlwmLsXXS3k0";
 
-  //──────────────────────────────────────────────
-  // 🔸 Check if a food item with the same name exists
-  //──────────────────────────────────────────────
   Future<bool> isFoodItemExist(String name) async {
     final nameLower = name.toLowerCase();
     try {
