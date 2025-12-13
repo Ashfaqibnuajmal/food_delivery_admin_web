@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/provider/pick_image.dart';
+import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/cutom_snackbar.dart';
@@ -40,19 +40,32 @@ class CategoryHeader extends StatelessWidget {
       context: context,
       controller: catagorynameController,
       onPressed: () async {
-        final imageProvider = context.read<ImageProviderModel>();
-        final image = imageProvider.pickedImage;
+        final imageProvider = context.read<MultipleImageProvider>();
+        final images = imageProvider.pickedImages;
         final name = catagorynameController.text.trim();
-        if (name.isEmpty || image == null) {
-          return customSnackbar(context, "Pick a photo", Colors.red);
+
+        if (name.isEmpty || images.isEmpty) {
+          return customSnackbar(context, "Pick at least one photo", Colors.red);
         }
-        await context.read<CategorySevices>().addCategory(name, image);
-        // ignore: use_build_context_synchronously
-        if (Navigator.canPop(context)) {
-          catagorynameController.clear();
-          imageProvider.clearImage();
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+
+        try {
+          final uploadedUrls = <String>[];
+          for (var image in images) {
+            final url = await context
+                .read<CategorySevices>()
+                .sendImageToCloudinary(image);
+            if (url != null) uploadedUrls.add(url);
+          }
+
+          await context.read<CategorySevices>().addCategory(name, uploadedUrls);
+
+          if (Navigator.canPop(context)) {
+            catagorynameController.clear();
+            imageProvider.clearImages();
+            Navigator.pop(context);
+          }
+        } catch (e) {
+          customSnackbar(context, "Failed to add category: $e", Colors.red);
         }
       },
     );

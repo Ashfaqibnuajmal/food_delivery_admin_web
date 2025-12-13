@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/core/constants/firebase_options.dart';
+import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/features/auth/provider/login_provider.dart';
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ImageProviderModel>(
           create: (_) => ImageProviderModel(),
+        ),
+        ChangeNotifierProvider<MultipleImageProvider>(
+          create: (_) => MultipleImageProvider(),
         ),
         ChangeNotifierProvider(create: (_) => UserSearchProvider()),
         ChangeNotifierProvider(create: (_) => LoginController()),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/provider/pick_image.dart';
+import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/categories/controller/category_controller.dart';
 
 custemAddDialog({
   required BuildContext context,
-  String? oldImage,
   required TextEditingController controller,
-  required VoidCallback onPressed,
+  required Future<void> Function() onPressed, // <-- change type
+  List<String>? oldImages, // optional existing images for edit
 }) {
   final formKey = GlobalKey<FormState>();
   final service = CategoryController();
@@ -17,7 +17,7 @@ custemAddDialog({
   return showDialog(
     context: context,
     builder: (context) {
-      final imageProvider = Provider.of<ImageProviderModel>(context);
+      final imageProvider = Provider.of<MultipleImageProvider>(context);
 
       return Dialog(
         backgroundColor: AppColors.deepBlue,
@@ -30,9 +30,10 @@ custemAddDialog({
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 🖼 Image Picker
+                // 🖼 Image Picker (horizontal scroll)
                 GestureDetector(
-                  onTap: () => service.handleImagePick(context),
+                  onTap: () async =>
+                      await service.handleMultipleImagePick(context),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -41,16 +42,39 @@ custemAddDialog({
                     ),
                     height: 200,
                     width: double.infinity,
-                    child: imageProvider.pickedImage != null
-                        ? Image.memory(
-                            imageProvider.pickedImage!,
-                            fit: BoxFit.contain,
+                    child: imageProvider.pickedImages.isNotEmpty
+                        ? ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: imageProvider.pickedImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image.memory(
+                                  imageProvider.pickedImages[index],
+                                  width: 180,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
                           )
-                        : oldImage != null
-                        ? Image.network(oldImage, fit: BoxFit.contain)
+                        : (oldImages != null && oldImages.isNotEmpty)
+                        ? ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: oldImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image.network(
+                                  oldImages[index],
+                                  width: 180,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          )
                         : const Center(
                             child: Text(
-                              "Click here to add image!",
+                              "Click here to add images!",
                               style: TextStyle(
                                 color: AppColors.pureWhite,
                                 fontWeight: FontWeight.bold,
@@ -65,7 +89,7 @@ custemAddDialog({
                 TextFormField(
                   controller: controller,
                   keyboardType: TextInputType.text,
-                  decoration: inputDecoration("Name"),
+                  decoration: inputDecoration("Category Name"),
                   validator: service.validateName,
                   style: const TextStyle(color: AppColors.pureWhite),
                 ),
@@ -74,7 +98,10 @@ custemAddDialog({
 
                 // ➕ Button
                 ElevatedButton(
-                  onPressed: onPressed,
+                  onPressed: () {
+                    if (!formKey.currentState!.validate()) return;
+                    onPressed();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lightBlue,
                     padding: const EdgeInsets.symmetric(

@@ -20,7 +20,7 @@ class CategorySevices extends ChangeNotifier {
 
       for (var doc in snapshot.docs) {
         final data = doc.data();
-        final categoryName = (data['Name'] ?? '') as String;
+        final categoryName = (data['name'] ?? '') as String;
         if (categoryName.toLowerCase() == nameLower) {
           return true;
         }
@@ -33,37 +33,47 @@ class CategorySevices extends ChangeNotifier {
     }
   }
 
-  Future<void> addCategory(String name, Uint8List image) async {
+  // In CategorySevices
+  Future<void> addCategory(String name, List<String> imageUrls) async {
     try {
       final catagoryExist = await isCategoryExist(name);
       if (catagoryExist) {
-        throw Exception("Category with the name $name already existes!");
+        throw Exception("Category with the name $name already exists!");
       }
-      String? imageUrl = await sendImageToCloudinary(image);
-      if (imageUrl != null) {
-        final docref = categoryCollection.doc();
-        final categoryModel = CategoryModel(
-          categoryUid: docref.id,
-          imageUrl: imageUrl,
-          name: name,
-        );
-        await categoryCollection
-            .doc(categoryModel.categoryUid)
-            .set(categoryModel.toMap());
-      } else {
-        throw "Image not available";
+
+      if (imageUrls.isEmpty) {
+        throw "No images provided";
       }
+
+      final docref = categoryCollection.doc();
+      final categoryModel = CategoryModel(
+        categoryUid: docref.id,
+        name: name,
+        imageUrls: imageUrls, // Store URLs
+      );
+
+      await categoryCollection
+          .doc(categoryModel.categoryUid)
+          .set(categoryModel.toMap());
     } catch (e) {
       log(e.toString());
       rethrow;
     }
   }
 
-  Future<void> editCategory(CategoryModel category, String oldImage) async {
+  /// Edit category (multiple images)
+  Future<void> editCategory(
+    CategoryModel category,
+    List<String> oldImages,
+  ) async {
     try {
-      if (oldImage != category.imageUrl) {
-        await deleteImageFromCloudinary(oldImage);
+      // Delete removed images
+      for (var oldImg in oldImages) {
+        if (!category.imageUrls.contains(oldImg)) {
+          await deleteImageFromCloudinary(oldImg);
+        }
       }
+
       await categoryCollection
           .doc(category.categoryUid)
           .update(category.toMap());
@@ -73,9 +83,12 @@ class CategorySevices extends ChangeNotifier {
     }
   }
 
+  /// Delete category (all images)
   Future<void> deleteCategory(CategoryModel category) async {
     try {
-      await deleteImageFromCloudinary(category.categoryUid);
+      for (var img in category.imageUrls) {
+        await deleteImageFromCloudinary(img);
+      }
       await categoryCollection.doc(category.categoryUid).delete();
     } catch (e) {
       log(e.toString());
@@ -83,6 +96,7 @@ class CategorySevices extends ChangeNotifier {
     }
   }
 
+  /// Fetch categories
   Stream<List<CategoryModel>> fetchCatagories() {
     return categoryCollection.snapshots().map(
       (snapshot) => snapshot.docs
@@ -91,6 +105,7 @@ class CategorySevices extends ChangeNotifier {
     );
   }
 
+  /// Upload single image to Cloudinary
   Future<String?> sendImageToCloudinary(Uint8List image) async {
     try {
       final url = Uri.parse(
@@ -101,9 +116,9 @@ class CategorySevices extends ChangeNotifier {
         ..files.add(
           http.MultipartFile.fromBytes("file", image, filename: "categoryname"),
         );
+
       final response = await request.send();
       if (response.statusCode == 200) {
-        log("request sended successfully");
         final res = await http.Response.fromStream(response);
         return jsonDecode(res.body)["secure_url"];
       }
@@ -113,6 +128,7 @@ class CategorySevices extends ChangeNotifier {
     return null;
   }
 
+  /// Delete image from Cloudinary
   Future<void> deleteImageFromCloudinary(String imageUrl) async {
     try {
       final uri = Uri.parse(imageUrl);
@@ -133,13 +149,14 @@ class CategorySevices extends ChangeNotifier {
         },
         body: jsonEncode({"public_id": publicId}),
       );
+
       if (response.statusCode == 200) {
-        log("Imade deleted from cloudinary:$publicId");
+        log("Image deleted from cloudinary: $publicId");
       } else {
-        throw "Failed to delete imafe form cloudinary: ${response.statusCode}";
+        throw "Failed to delete image from Cloudinary: ${response.statusCode}";
       }
     } catch (e) {
-      log("Error deleting image from cloudinary : $e");
+      log("Error deleting image from Cloudinary : $e");
     }
   }
 }

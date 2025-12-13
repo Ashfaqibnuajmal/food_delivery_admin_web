@@ -1,21 +1,21 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:user_app/core/functions/image_functions.dart';
-import 'package:user_app/core/provider/pick_image.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/widgets/cutom_snackbar.dart';
-import 'package:user_app/core/widgets/delete_dilog.dart';
+import 'package:user_app/core/functions/image_function_multiple.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart';
 import 'package:user_app/features/categories/data/services/category_sevices.dart';
+import 'package:user_app/core/widgets/cutom_snackbar.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
+import 'package:user_app/core/provider/multiple_image_provider.dart';
 
 class CategoryController {
-  /// Pick an image and update provider
-  Future<void> handleImagePick(BuildContext context) async {
+  Future<void> handleImagesPick(BuildContext context) async {
     try {
-      final image = await pickImage();
-      // ignore: use_build_context_synchronously
-      Provider.of<ImageProviderModel>(context, listen: false).setImage(image);
+      final images = await pickMultipleImages();
+      if (images.isNotEmpty) {
+        context.read<MultipleImageProvider>().addImages(images);
+      }
     } catch (e) {
       log("Image Pick Error: $e");
     }
@@ -24,20 +24,55 @@ class CategoryController {
   /// Validate category name
   String? validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return "Name is required"; // Return error if empty
+      return "Name is required";
     }
-    return null; // Return null if valid
+    return null;
   }
 
-  /// Pick new image for editing
-  Future<void> pickImageForEdit(BuildContext context) async {
+  /// Pick new images for editing (append to existing)
+  Future<void> pickImagesForEdit(BuildContext context) async {
     try {
-      final image = await pickImage();
-      // Update provider with new image
-      // ignore: use_build_context_synchronously
-      context.read<ImageProviderModel>().setImage(image);
+      final images = await pickMultipleImages();
+      if (images.isNotEmpty) {
+        context.read<MultipleImageProvider>().addImages(images);
+      }
     } catch (e) {
       log("Image pick error: $e");
+    }
+  }
+
+  /// Save category with multiple images
+  Future<void> handleSaveMultiple({
+    required BuildContext context,
+    required TextEditingController controller,
+  }) async {
+    final name = controller.text.trim();
+    final imageProvider = context.read<MultipleImageProvider>();
+    final images = imageProvider.pickedImages;
+
+    if (name.isEmpty || images.isEmpty) {
+      customSnackbar(
+        context,
+        "Enter name and pick at least one image",
+        Colors.red,
+      );
+      return;
+    }
+
+    try {
+      await context.read<CategorySevices>().addCategory(
+        name,
+        images.cast<String>(),
+      );
+
+      // Clear after save
+      if (Navigator.canPop(context)) {
+        controller.clear();
+        imageProvider.clearImages();
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      customSnackbar(context, "Failed to add category: $e", Colors.red);
     }
   }
 
@@ -50,14 +85,14 @@ class CategoryController {
     final newName = controller.text.trim();
 
     if (newName.isEmpty) {
-      customSnackbar(context, "Name cannot be empty", Colors.red); // Show error
+      customSnackbar(context, "Name cannot be empty", Colors.red);
       return;
     }
 
-    onSave(newName); // Call save callback
+    onSave(newName);
 
     if (Navigator.canPop(context)) {
-      Navigator.pop(context); // Close dialog/page
+      Navigator.pop(context);
     }
   }
 
@@ -71,38 +106,43 @@ class CategoryController {
 
     custemAddDialog(
       context: context,
-      oldImage: model.imageUrl,
+      oldImages: model.imageUrls, // Updated
       controller: controller,
       onPressed: () async {
-        final imageProvider = context.read<ImageProviderModel>();
-        final newImageFile = imageProvider.pickedImage;
+        final imageProvider = context.read<MultipleImageProvider>();
+        final newImages = imageProvider.pickedImages;
 
-        String finalImageURL = model.imageUrl;
+        List<String> finalImageUrls = model.imageUrls;
 
-        // Upload new image if selected
-        if (newImageFile != null) {
-          finalImageURL =
-              await context.read<CategorySevices>().sendImageToCloudinary(
-                newImageFile,
-              ) ??
-              model.imageUrl;
+        // Upload new images if selected
+        if (newImages.isNotEmpty) {
+          final uploadedUrls = <String>[];
+          for (var img in newImages) {
+            final url = await context
+                .read<CategorySevices>()
+                .sendImageToCloudinary(img);
+            if (url != null) uploadedUrls.add(url);
+          }
+          // Combine old + new
+          finalImageUrls = [...model.imageUrls, ...uploadedUrls];
         }
 
         final updated = CategoryModel(
           categoryUid: model.categoryUid,
-          imageUrl: finalImageURL,
           name: controller.text.trim(),
+          imageUrls: finalImageUrls,
         );
 
         // Update category in service
-        // ignore: use_build_context_synchronously
-        context.read<CategorySevices>().editCategory(updated, model.imageUrl);
+        await context.read<CategorySevices>().editCategory(
+          updated,
+          model.imageUrls,
+        );
 
-        controller.clear(); // Clear controller
-        imageProvider.clearImage(); // Clear selected image
+        controller.clear();
+        imageProvider.clearImages();
 
-        // ignore: use_build_context_synchronously
-        if (Navigator.canPop(context)) Navigator.pop(context); // Close dialog
+        if (Navigator.canPop(context)) Navigator.pop(context);
       },
     );
   }
@@ -110,8 +150,30 @@ class CategoryController {
   /// Handle delete category
   void handleDelete(BuildContext context, CategoryModel model) {
     customDeleteDialog(context, () {
-      context.read<CategorySevices>().deleteCategory(model); // Delete category
-      Navigator.pop(context); // Close confirmation dialog
+      context.read<CategorySevices>().deleteCategory(model);
+      Navigator.pop(context);
     });
   }
+
+  Future<void> handleMultipleImagePick(BuildContext context) async {
+    try {
+      final images = await pickMultipleImages();
+      if (images != null && images.isNotEmpty) {
+        context.read<MultipleImageProvider>().setImages(images);
+      }
+    } catch (e) {
+      log("Error picking multiple images: $e");
+    }
+  }
+
+  // Future<void> pickMultipleImages(BuildContext context) async {
+  //   try {
+  //     final images = await pickMultipleImages();
+  //     if (images.isNotEmpty) {
+  //       context.read<MultipleImageProvider>().addImages(images);
+  //     }
+  //   } catch (e) {
+  //     log("Error picking multiple images: $e");
+  //   }
+  // }
 }

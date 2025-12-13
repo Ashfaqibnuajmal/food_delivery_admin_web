@@ -86,7 +86,7 @@ class CategoryBody extends StatelessWidget {
                               Expanded(
                                 child: Center(
                                   child: Text(
-                                    "Image",
+                                    "Images",
                                     style: CustomTextStyles.header,
                                   ),
                                 ),
@@ -141,15 +141,29 @@ class CategoryBody extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  // Image
+                                  // Images (horizontal scroll)
                                   Expanded(
-                                    child: Center(
-                                      child: ShimmerNetworkImage(
-                                        imageUrl: value.imageUrl,
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: BorderRadius.circular(8),
-                                        fit: BoxFit.cover,
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: value.imageUrls.length,
+                                        itemBuilder: (context, imgIndex) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                            ),
+                                            child: ShimmerNetworkImage(
+                                              imageUrl:
+                                                  value.imageUrls[imgIndex],
+                                              width: 40,
+                                              height: 40,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
