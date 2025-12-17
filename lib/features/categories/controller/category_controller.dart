@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,10 +62,28 @@ class CategoryController {
     }
 
     try {
-      await context.read<CategorySevices>().addCategory(
-        name,
-        images.cast<String>(),
-      );
+      // Upload all images to Cloudinary and get URLs
+      final List<String> uploadedImageUrls = [];
+      final categoryService = context.read<CategorySevices>();
+
+      for (var imageBytes in images) {
+        final url = await categoryService.sendImageToCloudinary(imageBytes);
+        if (url != null) {
+          uploadedImageUrls.add(url);
+        }
+      }
+
+      if (uploadedImageUrls.isEmpty) {
+        customSnackbar(
+          context,
+          "Failed to upload images. Please try again.",
+          Colors.red,
+        );
+        return;
+      }
+
+      // Now save category with the uploaded image URLs
+      await categoryService.addCategory(name, uploadedImageUrls);
 
       // Clear after save
       if (Navigator.canPop(context)) {
@@ -71,6 +91,8 @@ class CategoryController {
         imageProvider.clearImages();
         Navigator.pop(context);
       }
+
+      customSnackbar(context, "Category added successfully!", Colors.green);
     } catch (e) {
       customSnackbar(context, "Failed to add category: $e", Colors.red);
     }
@@ -158,22 +180,11 @@ class CategoryController {
   Future<void> handleMultipleImagePick(BuildContext context) async {
     try {
       final images = await pickMultipleImages();
-      if (images != null && images.isNotEmpty) {
+      if (images.isNotEmpty) {
         context.read<MultipleImageProvider>().setImages(images);
       }
     } catch (e) {
       log("Error picking multiple images: $e");
     }
   }
-
-  // Future<void> pickMultipleImages(BuildContext context) async {
-  //   try {
-  //     final images = await pickMultipleImages();
-  //     if (images.isNotEmpty) {
-  //       context.read<MultipleImageProvider>().addImages(images);
-  //     }
-  //   } catch (e) {
-  //     log("Error picking multiple images: $e");
-  //   }
-  // }
 }

@@ -134,7 +134,6 @@ Future<void> showEditCategoryDialog({
                     onPressed: () {
                       if (!formKey.currentState!.validate()) return;
 
-                      final images = multiImageProvider.pickedImages;
                       service.handleSaveMultiple(
                         context: context,
                         controller: nameController,

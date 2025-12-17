@@ -39,7 +39,7 @@ class ExpenseRow extends StatelessWidget {
           Expanded(
             child: Center(
               child: Text(
-                expense.amount.toString(),
+                "₹${expense.amount.toString()}",
                 style: CustomTextStyles.addCategory,
               ),
             ),

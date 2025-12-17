@@ -133,27 +133,62 @@ class CategorySevices extends ChangeNotifier {
     try {
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
-      final publicId = pathSegments
-          .sublist(pathSegments.indexOf(cloudPresent))
-          .join('/')
-          .split('/')
-          .first;
+
+      // Find the index of the upload preset in the path
+      int presetIndex = pathSegments.indexOf(cloudPresent);
+
+      // If preset not found, try to extract public_id differently
+      String publicId;
+      if (presetIndex == -1) {
+        // URL format: https://res.cloudinary.com/[cloudName]/image/upload/v[version]/[publicId].[extension]
+        // Find the version (starts with 'v')
+        int versionIndex = -1;
+        for (int i = 0; i < pathSegments.length; i++) {
+          if (pathSegments[i].startsWith('v') && pathSegments[i].length > 1) {
+            final versionPart = pathSegments[i].substring(1);
+            if (int.tryParse(versionPart) != null) {
+              versionIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (versionIndex != -1 && versionIndex + 1 < pathSegments.length) {
+          // Get everything after version and remove extension
+          final fileWithExt = pathSegments.sublist(versionIndex + 1).join('/');
+          publicId = fileWithExt.substring(0, fileWithExt.lastIndexOf('.'));
+        } else {
+          // Fallback: get last segment and remove extension
+          final lastSegment = pathSegments.last;
+          publicId = lastSegment.substring(0, lastSegment.lastIndexOf('.'));
+        }
+      } else {
+        // Extract public_id from preset onwards
+        final fileWithExt = pathSegments.sublist(presetIndex + 1).join('/');
+        publicId = fileWithExt.substring(0, fileWithExt.lastIndexOf('.'));
+      }
+
       final url = Uri.parse(
-        "https://api.cloudinary.com/v1_1/$cloudName/resources/image/upload",
+        "https://api.cloudinary.com/v1_1/$cloudName/image/delete",
       );
-      final response = await http.delete(
+      final response = await http.post(
         url,
         headers: {
           "Authorization":
               "Basic ${base64Encode(utf8.encode('$cloudApiKey:$cloudApiSecretKey'))}",
+          "Content-Type": "application/json",
         },
-        body: jsonEncode({"public_id": publicId}),
+        body: jsonEncode({
+          "public_ids": [publicId],
+        }),
       );
 
       if (response.statusCode == 200) {
         log("Image deleted from cloudinary: $publicId");
       } else {
-        throw "Failed to delete image from Cloudinary: ${response.statusCode}";
+        log(
+          "Failed to delete image from Cloudinary: ${response.statusCode} - ${response.body}",
+        );
       }
     } catch (e) {
       log("Error deleting image from Cloudinary : $e");

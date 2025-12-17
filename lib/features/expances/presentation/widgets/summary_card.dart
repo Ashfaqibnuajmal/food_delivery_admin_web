@@ -45,7 +45,10 @@ class SummaryCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(amount.toStringAsFixed(2), style: CustomTextStyles.header),
+            Text(
+              "₹${amount.toStringAsFixed(2)}",
+              style: CustomTextStyles.header,
+            ),
           ],
         ),
       ),

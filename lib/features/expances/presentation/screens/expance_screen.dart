@@ -19,7 +19,7 @@ class ExpanceScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ExpanceHeader(
-                title: "Expanse Management",
+                title: "Expense Management",
                 onAddPressed: () {
                   showAddExpense(context);
                 },

@@ -5,8 +5,8 @@ import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/due%20payment/data/model/due_user_model.dart';
 import 'package:user_app/features/due%20payment/data/services/due_payment_services.dart';
-import 'package:user_app/features/due%20payment/presentation/widget/due_details_screen/due_details_table_header.dart';
 import 'package:user_app/features/due%20payment/presentation/widget/due_payment_screen/due_payment_table.dart';
+import 'package:user_app/features/due%20payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
 
 class DuePaymentTableContainer extends StatelessWidget {
   const DuePaymentTableContainer({super.key});

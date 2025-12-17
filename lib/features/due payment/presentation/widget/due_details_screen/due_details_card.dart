@@ -65,7 +65,7 @@ class UserEntriesCard extends StatelessWidget {
                 children: [
                   UserBalanceHeader(userName: userName, balance: balance),
                   const SizedBox(height: 20),
-                  const DuePaymentTableHeader(),
+                  DueDetailsTableHeader(),
                   const SizedBox(height: 8),
                   DuePaymentTableBody(entries: entries, service: service),
                 ],

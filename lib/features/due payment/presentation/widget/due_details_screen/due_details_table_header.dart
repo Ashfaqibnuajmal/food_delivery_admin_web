@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 
-class DuePaymentTableHeader extends StatelessWidget {
-  const DuePaymentTableHeader({super.key});
+class DueDetailsTableHeader extends StatelessWidget {
+  const DueDetailsTableHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 icon: const Icon(Icons.category, color: AppColors.lightBlue),
               ),
               SideMenuItem(
-                title: 'Expance',
+                title: 'Expense',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
