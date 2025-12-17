@@ -41,7 +41,7 @@ class CategoryBody extends StatelessWidget {
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
-                      "Error: ${snapshot.error}",
+                      "Errors: ${snapshot.error}",
                       style: const TextStyle(color: Colors.red),
                     ),
                   );
