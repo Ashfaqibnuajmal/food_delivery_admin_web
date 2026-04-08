@@ -44,7 +44,7 @@ class UserEntriesCard extends StatelessWidget {
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(
                   child: Text(
-                    "No entries yet!",
+                    "No  yet!",
                     style: CustomTextStyles.buttonText,
                   ),
                 );

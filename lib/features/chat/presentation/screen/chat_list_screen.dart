@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:user_app/core/constants/admin_id.dart';
 import 'package:user_app/core/theme/web_color.dart';
@@ -19,14 +20,35 @@ class _ChatListScreenState extends State<ChatListScreen> {
   String? selectedUserId;
   String? selectedUserName;
 
+  /// Format the Firestore timestamp for display in the chat tile
+  String _formatTime(dynamic timestamp) {
+    if (timestamp == null) return "";
+    if (timestamp is Timestamp) {
+      final date = timestamp.toDate();
+      final now = DateTime.now();
+      // If today, show time. Otherwise show date.
+      if (date.year == now.year &&
+          date.month == now.month &&
+          date.day == now.day) {
+        final hour = date.hour > 12 ? date.hour - 12 : (date.hour == 0 ? 12 : date.hour);
+        final amPm = date.hour >= 12 ? 'PM' : 'AM';
+        return "${hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} $amPm";
+      } else {
+        return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year.toString().substring(2)}";
+      }
+    }
+    return "";
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Row(
           children: [
+            // ── LEFT PANEL: List of active chats ──
             Flexible(
-              flex: 2, // left side small
+              flex: 2,
               child: Container(
                 color: AppColors.darkBlue,
                 child: Column(
@@ -42,7 +64,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     const Padding(
                       padding: EdgeInsets.only(left: 16, bottom: 12),
                       child: Text(
-                        "All Users",
+                        "Chats",
                         style: TextStyle(
                           color: AppColors.pureWhite,
                           fontSize: 15,
@@ -51,11 +73,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       ),
                     ),
 
+                    // ✅ FIX: Stream from "Chats" collection (only users who messaged)
                     Expanded(
-                      child: StreamBuilder(
-                        stream: _chatService.getAllUsers(),
+                      child: StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _chatService.fetchAllChatsForAdmin(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return const Center(
                               child: CircularProgressIndicator(
                                 color: AppColors.pureWhite,
@@ -63,34 +87,53 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             );
                           }
 
-                          final users = snapshot.data!;
-
-                          if (users.isEmpty) {
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
                             return const Center(
                               child: Text(
-                                "No users found",
+                                "No chats yet",
                                 style: TextStyle(color: AppColors.pureWhite),
                               ),
                             );
                           }
 
-                          return ListView.builder(
-                            itemCount: users.length,
-                            itemBuilder: (context, index) {
-                              final user = users[index];
+                          final chats = snapshot.data!;
 
-                              return UserChatTile(
-                                name: user['name'] ?? "",
-                                message: "Start chat with ${user['name']}",
-                                time: "",
-                                unread: 0,
-                                imageUrl: (user['imageUrl'] ?? "").toString(),
-                                onTap: () {
-                                  setState(() {
-                                    selectedUserId = user['id'];
-                                    selectedUserName = user['name'];
-                                  });
-                                },
+                          return ListView.builder(
+                            itemCount: chats.length,
+                            itemBuilder: (context, index) {
+                              final chat = chats[index];
+                              final chatUserId =
+                                  chat['userId']?.toString() ?? '';
+                              final userName =
+                                  chat['userName']?.toString() ?? 'User';
+                              final lastMessage =
+                                  chat['lastMessage']?.toString() ?? '';
+                              final unread =
+                                  (chat['unreadByAdmin'] as num?)?.toInt() ?? 0;
+                              final timeStr =
+                                  _formatTime(chat['lastMessageTime']);
+
+                              final isSelected =
+                                  selectedUserId == chatUserId;
+
+                              return Container(
+                                color: isSelected
+                                    ? AppColors.mediumBlue
+                                    : Colors.transparent,
+                                child: UserChatTile(
+                                  name: userName,
+                                  message: lastMessage,
+                                  time: timeStr,
+                                  unread: unread,
+                                  imageUrl:
+                                      (chat['imageUrl'] ?? "").toString(),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedUserId = chatUserId;
+                                      selectedUserName = userName;
+                                    });
+                                  },
+                                ),
                               );
                             },
                           );
@@ -102,8 +145,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ),
             ),
 
+            // ── RIGHT PANEL: Chat window ──
             Flexible(
-              flex: 2, // big chat window
+              flex: 2,
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -115,7 +159,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Image for empty chat
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.asset(
@@ -126,7 +169,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            // Main title
                             const Text(
                               "It's nice to chat with someone",
                               style: TextStyle(
@@ -137,11 +179,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 10),
-                            // Subtitle
                             const Text(
                               "Pick a person from the left menu and start your conversation",
                               style: TextStyle(
-                                color: AppColors.pureWhite, // lighter white
+                                color: AppColors.pureWhite,
                                 fontSize: 16,
                               ),
                               textAlign: TextAlign.center,
@@ -150,6 +191,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         ),
                       )
                     : ChatWindow(
+                        key: ValueKey(selectedUserId),  // ✅ Forces rebuild on user switch
                         userName: selectedUserName!,
                         userId: selectedUserId!,
                         adminId: adminId,
