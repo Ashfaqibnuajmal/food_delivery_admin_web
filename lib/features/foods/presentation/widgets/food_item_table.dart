@@ -7,7 +7,6 @@ import 'package:user_app/features/foods/data/model/food_item_model.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 import 'package:user_app/features/foods/presentation/widgets/food_item_table_row.dart';
 
-// This is your custom widget
 class FoodItemTable extends StatelessWidget {
   const FoodItemTable({super.key});
 
@@ -25,6 +24,15 @@ class FoodItemTable extends StatelessWidget {
             );
           }
 
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                "Something went wrong while loading food items",
+                style: CustomTextStyles.buttonText,
+              ),
+            );
+          }
+
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Text(
@@ -36,9 +44,8 @@ class FoodItemTable extends StatelessWidget {
 
           return Consumer<UserSearchProvider>(
             builder: (context, searchProvider, _) {
-              final query = searchProvider.query.toLowerCase();
+              final query = searchProvider.query.toLowerCase().trim();
 
-              // Filtered list based on voice/text
               final filteredItems = snapshot.data!
                   .where((food) => food.name.toLowerCase().contains(query))
                   .toList();
@@ -52,8 +59,13 @@ class FoodItemTable extends StatelessWidget {
                 );
               }
 
-              return ListView.builder(
+              return ListView.separated(
                 itemCount: filteredItems.length,
+                separatorBuilder: (context, index) => const Divider(
+                  height: 1,
+                  thickness: 0.4,
+                  color: AppColors.mediumBlue,
+                ),
                 itemBuilder: (context, index) {
                   final food = filteredItems[index];
                   return FoodItemTableRow(food: food);

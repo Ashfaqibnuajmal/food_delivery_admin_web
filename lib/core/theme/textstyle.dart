@@ -48,6 +48,36 @@ class CustomTextStyles {
     fontSize: 16,
     color: Colors.white,
   );
+  static const TextStyle smallWhiteText = TextStyle(
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle smallRedText = TextStyle(
+    fontSize: 12,
+    color: AppColors.errorRed,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle blueBig = TextStyle(
+    fontSize: 20,
+    color: AppColors.darkBlue,
+    fontWeight: FontWeight.bold,
+  );
+  static const TextStyle mediumWhiteText = TextStyle(
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle bigWhiteText = TextStyle(
+    fontSize: 14,
+    color: Colors.white,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle lightWhite = TextStyle(
+    fontSize: 12,
+    color: Colors.white60,
+    fontWeight: FontWeight.w600,
+  );
   static const TextStyle text = TextStyle(color: AppColors.pureWhite);
   static const TextStyle yesORno = TextStyle(
     fontSize: 14,

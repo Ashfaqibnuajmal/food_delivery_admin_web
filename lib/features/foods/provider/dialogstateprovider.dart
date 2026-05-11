@@ -6,6 +6,12 @@ class AddFoodDialogProvider extends ChangeNotifier {
   bool isTodayOffer = false;
   bool isHalfAvailable = false;
   bool isBestSeller = false;
+  bool isSubmitting = false;
+
+  void setSubmitting(bool value) {
+    isSubmitting = value;
+    notifyListeners();
+  }
 
   void toggleCompo(bool val) {
     isCompo = val;

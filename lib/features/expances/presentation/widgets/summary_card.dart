@@ -21,8 +21,9 @@ class SummaryCard extends StatelessWidget {
       width: 200,
       height: 110,
       decoration: BoxDecoration(
-        color: AppColors.mediumBlue,
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.deepBlue.withOpacity(0.55),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.lightBlue.withOpacity(0.08)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -32,22 +33,38 @@ class SummaryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: CustomTextStyles.header),
-                Container(
-                  height: 30,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue,
-                    borderRadius: BorderRadius.circular(5),
+                Text(
+                  title,
+                  style: CustomTextStyles.header.copyWith(
+                    color: AppColors.pureWhite.withOpacity(0.75),
                   ),
-                  child: icon,
+                ),
+
+                Container(
+                  height: 32,
+                  width: 32,
+                  decoration: BoxDecoration(
+                    color: AppColors.lightBlue,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconTheme(
+                    data: const IconThemeData(
+                      color: AppColors.darkBlue,
+                      size: 18,
+                    ),
+                    child: icon,
+                  ),
                 ),
               ],
             ),
+
             const Spacer(),
+
             Text(
               "₹${amount.toStringAsFixed(2)}",
-              style: CustomTextStyles.header,
+              style: CustomTextStyles.header.copyWith(
+                color: AppColors.pureWhite,
+              ),
             ),
           ],
         ),

@@ -4,15 +4,16 @@ import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/categories/controller/category_controller.dart';
+import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
 
 custemAddDialog({
   required BuildContext context,
   required TextEditingController controller,
-  required Future<void> Function() onPressed, // <-- change type
-  List<String>? oldImages, // optional existing images for edit
+  required Future<void> Function() onPressed,
+  List<String>? oldImages,
 }) {
   final formKey = GlobalKey<FormState>();
-  final service = CategoryController();
+  final categoryController = CategoryController(); // only for image picking
 
   return showDialog(
     context: context,
@@ -20,8 +21,9 @@ custemAddDialog({
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          bool isUploading = false;
+          // ─── Read Providers ──────────────────────────────
           final imageProvider = Provider.of<MultipleImageProvider>(context);
+          final categoryProvider = context.watch<CategoryProvider>(); // 👈 new
 
           return Dialog(
             backgroundColor: AppColors.deepBlue,
@@ -39,10 +41,12 @@ custemAddDialog({
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 🖼 Image Picker (horizontal scroll)
+                    // ─── Image Picker ────────────────────────────────
                     GestureDetector(
-                      onTap: () async =>
-                          await service.handleMultipleImagePick(context),
+                      onTap: categoryProvider.isLoading
+                          ? null // 👈 disable tap while uploading
+                          : () async => await categoryController
+                                .handleImagesPick(context),
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -59,13 +63,35 @@ custemAddDialog({
                                 scrollDirection: Axis.horizontal,
                                 itemCount: imageProvider.pickedImages.length,
                                 itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Image.memory(
-                                      imageProvider.pickedImages[index],
-                                      width: 180,
-                                      fit: BoxFit.cover,
-                                    ),
+                                  return Stack(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Image.memory(
+                                          imageProvider.pickedImages[index],
+                                          width: 180,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      // 👈 remove individual image
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: GestureDetector(
+                                          onTap: () =>
+                                              imageProvider.removeImage(index),
+                                          child: const CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor: Colors.red,
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   );
                                 },
                               )
@@ -98,36 +124,30 @@ custemAddDialog({
 
                     const SizedBox(height: 20),
 
+                    // ─── Name Field ──────────────────────────────────
                     TextFormField(
                       controller: controller,
-                      enabled: !isUploading,
+                      enabled: !categoryProvider.isLoading, // 👈 from provider
                       keyboardType: TextInputType.text,
                       decoration: inputDecoration("Category Name"),
-                      validator: service.validateName,
+                      validator:
+                          categoryProvider.validateName, // 👈 from provider
                       style: const TextStyle(color: AppColors.pureWhite),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // ➕ Button
+                    // ─── Submit Button ───────────────────────────────
                     ElevatedButton(
-                      onPressed: () async {
-                        if (!formKey.currentState!.validate()) return;
-
-                        setState(() {
-                          isUploading = true;
-                        });
-
-                        try {
-                          await onPressed();
-                        } finally {
-                          if (context.mounted) {
-                            setState(() {
-                              isUploading = false;
-                            });
-                          }
-                        }
-                      },
+                      onPressed:
+                          categoryProvider
+                              .isLoading // 👈 from provider
+                          ? null
+                          : () async {
+                              if (!formKey.currentState!.validate()) return;
+                              await onPressed();
+                              Navigator.pop(context);
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.lightBlue,
                         padding: const EdgeInsets.symmetric(
@@ -138,14 +158,24 @@ custemAddDialog({
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
-                        "Add Category",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.pureWhite,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: categoryProvider.isLoading
+                          ? const SizedBox(
+                              // 👈 loading spinner while uploading
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.pureWhite,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              "Add Category",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.pureWhite,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ],
                 ),

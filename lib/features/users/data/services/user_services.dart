@@ -14,36 +14,23 @@ class UserServices extends ChangeNotifier {
     );
   }
 
-  Stream<int> totalUsersCount() =>
-      userCollection.snapshots().map((s) => s.docs.length);
-
-  Stream<int> activeUsersCount() => userCollection
-      .where("status", isEqualTo: "active")
-      .snapshots()
-      .map((s) => s.docs.length);
-
-  Stream<int> blockedUsersCount() => userCollection
-      .where("status", isEqualTo: "blocked")
-      .snapshots()
-      .map((s) => s.docs.length);
-
-  /// 🚫 block user
   Future<void> blockUser(String uid) async {
     try {
       await userCollection.doc(uid).update({"status": "blocked"});
       log("User $uid blocked");
     } catch (e) {
       log("Error blocking user: $e");
+      throw Exception("Failed to block user");
     }
   }
 
-  /// ✅ unblock user
   Future<void> unblockUser(String uid) async {
     try {
       await userCollection.doc(uid).update({"status": "active"});
       log("User $uid unblocked");
     } catch (e) {
       log("Error unblocking user: $e");
+      throw Exception("Failed to unblock user");
     }
   }
 }

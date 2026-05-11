@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/widgets/custom_snackbar.dart';
+import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/core/widgets/network_image_placeolder.dart';
-import 'package:user_app/features/categories/controller/category_controller.dart';
+import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart';
-import 'package:user_app/features/categories/data/services/category_sevices.dart';
+import 'package:user_app/features/categories/controller/category_controller.dart';
+import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
+import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
 // ignore: must_be_immutable
 class CategoryBody extends StatelessWidget {
@@ -16,7 +20,8 @@ class CategoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logic = CategoryController();
+    final categoryProvider = context.watch<CategoryProvider>(); // 👈 new
+    final categoryController = CategoryController(); // only for image picking
 
     return Center(
       child: SizedBox(
@@ -28,8 +33,9 @@ class CategoryBody extends StatelessWidget {
               minWidth: MediaQuery.of(context).size.width - sidebarWidth - 26.0,
             ),
             child: StreamBuilder<List<CategoryModel>>(
-              stream: context.read<CategorySevices>().fetchCatagories(),
+              stream: categoryProvider.fetchCategories(), // 👈 from provider
               builder: (context, snapshot) {
+                // ─── Loading ─────────────────────────────────
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(
@@ -38,15 +44,17 @@ class CategoryBody extends StatelessWidget {
                   );
                 }
 
+                // ─── Stream Error ─────────────────────────────
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
-                      "Errors: ${snapshot.error}",
+                      "Error: ${snapshot.error}",
                       style: const TextStyle(color: Colors.red),
                     ),
                   );
                 }
 
+                // ─── Empty ────────────────────────────────────
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text(
@@ -71,7 +79,7 @@ class CategoryBody extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        // Header Row
+                        // ─── Header Row ───────────────────────
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: const BoxDecoration(
@@ -119,7 +127,7 @@ class CategoryBody extends StatelessWidget {
                           ),
                         ),
 
-                        // Content rows
+                        // ─── Content Rows ─────────────────────
                         ListView.builder(
                           itemCount: categories.length,
                           shrinkWrap: true,
@@ -141,7 +149,7 @@ class CategoryBody extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  // Images (horizontal scroll)
+                                  // ─── Images ─────────────────
                                   Expanded(
                                     child: SizedBox(
                                       height: 50,
@@ -168,7 +176,7 @@ class CategoryBody extends StatelessWidget {
                                     ),
                                   ),
 
-                                  // Name
+                                  // ─── Name ───────────────────
                                   Expanded(
                                     child: Center(
                                       child: Text(
@@ -181,15 +189,18 @@ class CategoryBody extends StatelessWidget {
                                     ),
                                   ),
 
-                                  // Edit Button
+                                  // ─── Edit Button ─────────────
                                   Expanded(
                                     child: Center(
                                       child: ElevatedButton(
-                                        onPressed: () => logic.handleEdit(
-                                          context,
-                                          value,
-                                          catagorynameController,
-                                        ),
+                                        onPressed: categoryProvider.isLoading
+                                            ? null // 👈 disable during loading
+                                            : () => _openEditDialog(
+                                                context,
+                                                value,
+                                                categoryProvider,
+                                                categoryController,
+                                              ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.deepBlue,
                                           foregroundColor: AppColors.pureWhite,
@@ -208,12 +219,17 @@ class CategoryBody extends StatelessWidget {
                                     ),
                                   ),
 
-                                  // Delete Button
+                                  // ─── Delete Button ────────────
                                   Expanded(
                                     child: Center(
                                       child: ElevatedButton(
-                                        onPressed: () =>
-                                            logic.handleDelete(context, value),
+                                        onPressed: categoryProvider.isLoading
+                                            ? null // 👈 disable during loading
+                                            : () => _handleDelete(
+                                                context,
+                                                value,
+                                                categoryProvider,
+                                              ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.red,
                                           foregroundColor: AppColors.pureWhite,
@@ -246,5 +262,70 @@ class CategoryBody extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // ─── Edit Dialog ───────────────────────────────────────────
+  void _openEditDialog(
+    BuildContext context,
+    CategoryModel value,
+    CategoryProvider categoryProvider,
+    CategoryController categoryController,
+  ) {
+    catagorynameController.text = value.name;
+
+    custemAddDialog(
+      context: context,
+      oldImages: value.imageUrls,
+      controller: catagorynameController,
+      onPressed: () async {
+        final imageProvider = context.read<MultipleImageProvider>();
+
+        final success = await categoryProvider.editCategory(
+          oldModel: value,
+          newName: catagorynameController.text.trim(),
+          newImages: imageProvider.pickedImages,
+        );
+
+        if (success) {
+          catagorynameController.clear();
+          imageProvider.clearImages();
+          if (Navigator.canPop(context)) Navigator.pop(context);
+          customSnackbar(
+            context,
+            "Category updated successfully!",
+            Colors.green,
+          );
+        } else {
+          customSnackbar(
+            context,
+            categoryProvider.errorMessage ?? "Something went wrong",
+            Colors.red,
+          );
+        }
+      },
+    );
+  }
+
+  // ─── Delete Dialog ─────────────────────────────────────────
+  void _handleDelete(
+    BuildContext context,
+    CategoryModel value,
+    CategoryProvider categoryProvider,
+  ) {
+    customDeleteDialog(context, () async {
+      final success = await categoryProvider.deleteCategory(value);
+
+      if (Navigator.canPop(context)) Navigator.pop(context);
+
+      if (success) {
+        customSnackbar(context, "Category deleted!", Colors.green);
+      } else {
+        customSnackbar(
+          context,
+          categoryProvider.errorMessage ?? "Failed to delete",
+          Colors.red,
+        );
+      }
+    });
   }
 }

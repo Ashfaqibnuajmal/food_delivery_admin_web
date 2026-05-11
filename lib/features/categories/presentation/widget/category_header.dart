@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/cutom_snackbar.dart';
-import 'package:user_app/features/categories/data/services/category_sevices.dart';
+import 'package:user_app/core/widgets/custom_snackbar.dart';
+import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
 class CategoryHeader extends StatelessWidget {
@@ -21,10 +21,10 @@ class CategoryHeader extends StatelessWidget {
           const Text("Categories", style: CustomTextStyles.loginHeading),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mediumBlue,
+              backgroundColor: AppColors.deepBlue,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
-            onPressed: () => categoryCustomAddDialog(context),
+            onPressed: () => _openAddCategoryDialog(context),
             child: const Text(
               "Add Category",
               style: CustomTextStyles.addCategory,
@@ -35,37 +35,40 @@ class CategoryHeader extends StatelessWidget {
     );
   }
 
-  categoryCustomAddDialog(BuildContext context) {
+  void _openAddCategoryDialog(BuildContext context) {
     custemAddDialog(
       context: context,
       controller: catagorynameController,
       onPressed: () async {
         final imageProvider = context.read<MultipleImageProvider>();
+        final categoryProvider = context.read<CategoryProvider>(); // 👈 new
         final images = imageProvider.pickedImages;
         final name = catagorynameController.text.trim();
 
+        // ─── Validation ──────────────────────────────────
         if (name.isEmpty || images.isEmpty) {
-          return customSnackbar(context, "Pick at least one photo", Colors.red);
+          customSnackbar(context, "Pick at least one photo", Colors.red);
+          return;
         }
 
-        try {
-          final uploadedUrls = <String>[];
-          for (var image in images) {
-            final url = await context
-                .read<CategorySevices>()
-                .sendImageToCloudinary(image);
-            if (url != null) uploadedUrls.add(url);
-          }
+        // ─── Add via Provider ────────────────────────────
+        final success = await categoryProvider.addCategory(
+          name: name,
+          images: images,
+        );
 
-          await context.read<CategorySevices>().addCategory(name, uploadedUrls);
-
-          if (Navigator.canPop(context)) {
-            catagorynameController.clear();
-            imageProvider.clearImages();
-            Navigator.pop(context);
-          }
-        } catch (e) {
-          customSnackbar(context, "Failed to add category: $e", Colors.red);
+        // ─── Result Feedback ─────────────────────────────
+        if (success) {
+          catagorynameController.clear();
+          imageProvider.clearImages();
+          if (Navigator.canPop(context)) Navigator.pop(context);
+          customSnackbar(context, "Category added successfully!", Colors.green);
+        } else {
+          customSnackbar(
+            context,
+            categoryProvider.errorMessage ?? "Something went wrong",
+            Colors.red,
+          );
         }
       },
     );

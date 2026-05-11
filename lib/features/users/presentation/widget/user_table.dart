@@ -3,42 +3,28 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/due%20payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
+import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
 import 'package:user_app/features/users/controller/user_controller.dart';
 import 'package:user_app/features/users/data/model/user_model.dart';
-import 'package:user_app/features/users/data/services/user_services.dart';
-import 'package:user_app/features/users/presentation/widget/user_cell_text.dart';
+import 'package:user_app/features/users/presentation/widget/data_cell_text.dart';
 
 class UserTable extends StatelessWidget {
-  final UserServices userService;
-
-  const UserTable({super.key, required this.userService});
+  const UserTable({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: StreamBuilder<List<UserModel>>(
-        stream: userService.fetchUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.pureWhite),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No users found', style: CustomTextStyles.text),
-            );
-          }
+    final provider = context.watch<UserSearchProvider>();
+    final users = provider.filteredUsers;
 
-          // Update provider with fetched users
-          context.read<UserSearchProvider>().setUsers(snapshot.data!);
+    if (users.isEmpty) {
+      return const Expanded(
+        child: Center(
+          child: Text('No users found', style: CustomTextStyles.text),
+        ),
+      );
+    }
 
-          // Build table body
-          return const _UserTableBody();
-        },
-      ),
-    );
+    return const Expanded(child: _UserTableBody());
   }
 }
 
@@ -98,8 +84,7 @@ class _UserTableBody extends StatelessWidget {
 
 /// Each row UI only, logic-free
 class UserTableRow extends StatelessWidget {
-  final dynamic user;
-
+  final UserModel user;
   const UserTableRow({super.key, required this.user});
 
   @override
@@ -110,9 +95,9 @@ class UserTableRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          DataCellText(user.name),
-          DataCellText(user.phone),
-          DataCellText(user.email),
+          DataCellText(user.name.isEmpty ? "No name" : user.name),
+          DataCellText(user.phone.isEmpty ? "No number" : user.phone),
+          DataCellText(user.email.isEmpty ? "No email" : user.email),
           Expanded(
             child: Center(
               child: Text(
@@ -134,10 +119,9 @@ class UserTableRow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () => UserTableLogic.handleUserAction(
+                onPressed: () => UserController.toggleUserStatus(
                   context: context,
                   user: user,
-                  isActive: isActive,
                 ),
                 child: Text(
                   isActive ? 'Block' : 'Unblock',

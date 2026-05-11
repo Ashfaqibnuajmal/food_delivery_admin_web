@@ -12,12 +12,15 @@ class FoodItemTableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final calories = food.calories % 1 == 0
+        ? food.calories.toStringAsFixed(0)
+        : food.calories.toStringAsFixed(1);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(color: AppColors.lightBlue.withOpacity(0.08)),
       child: Row(
         children: [
-          // Image
           Expanded(
             flex: 2,
             child: Center(
@@ -40,55 +43,60 @@ class FoodItemTableRow extends StatelessWidget {
               ),
             ),
           ),
-          // Name & Info
           Expanded(
             flex: 3,
             child: Center(
               child: Text(
-                "${food.name}\n${food.prepTimeMinutes} min | ${food.calories} kcal",
+                "${food.name}\n${food.prepTimeMinutes} min | $calories kcal",
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(color: AppColors.pureWhite),
               ),
             ),
           ),
-          // Price
           Expanded(
             flex: 2,
             child: Center(
               child: Text(
                 "₹ ${food.price.toStringAsFixed(2)}",
+                textAlign: TextAlign.center,
                 style: CustomTextStyles.buttonText,
               ),
             ),
           ),
-          // Category
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Text(food.category, style: CustomTextStyles.text),
-            ),
-          ),
-          // Type
           Expanded(
             flex: 2,
             child: Center(
               child: Text(
-                food.isCompo ? "Compo" : "Individual",
+                food.category,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: CustomTextStyles.text,
               ),
             ),
           ),
-          // Offer
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                food.isCompo ? "Combo" : "Individual",
+                textAlign: TextAlign.center,
+                style: CustomTextStyles.text,
+              ),
+            ),
+          ),
           Expanded(
             flex: 2,
             child: Center(
               child: Text(
                 food.isTodayOffer ? "Offer" : "No Offer",
+                textAlign: TextAlign.center,
                 style: CustomTextStyles.userStatus(food.isTodayOffer),
               ),
             ),
           ),
-          // Half Available
           Expanded(
             flex: 3,
             child: Center(
@@ -96,21 +104,21 @@ class FoodItemTableRow extends StatelessWidget {
                 food.isHalfAvailable
                     ? "Available\n₹ ${food.halfPrice?.toStringAsFixed(2) ?? '-'}"
                     : "Not Available",
+                textAlign: TextAlign.center,
                 style: CustomTextStyles.buttonText,
               ),
             ),
           ),
-          // Best Seller
           Expanded(
             flex: 2,
             child: Center(
               child: Text(
                 food.isBestSeller ? "★ Yes" : "No",
+                textAlign: TextAlign.center,
                 style: CustomTextStyles.bestSeller(food.isBestSeller),
               ),
             ),
           ),
-
           // Edit Button
           Expanded(
             flex: 2,

@@ -1,41 +1,70 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:user_app/features/users/data/model/user_model.dart';
+import 'package:user_app/features/users/data/services/user_services.dart';
 
 class UserSearchProvider extends ChangeNotifier {
-  // ───── User List & Filtering ─────
+  final UserServices userServices;
+
+  UserSearchProvider(this.userServices) {
+    _listenUsers(); // ✅ start listening automatically
+  }
+
+  // ───── STREAM SUBSCRIPTION ─────
+  StreamSubscription<List<UserModel>>? _userSub;
+
+  void _listenUsers() {
+    _userSub = userServices.fetchUsers().listen((users) {
+      _allUsers = users;
+      _applyFilter();
+    });
+  }
+
+  @override
+  void dispose() {
+    _userSub?.cancel();
+    super.dispose();
+  }
+
+  // ───── DATA ─────
   String _query = '';
   String get query => _query;
 
   List<UserModel> _allUsers = [];
-  List<UserModel> get allUsers => _allUsers;
+  List<UserModel> _filteredUsers = [];
 
-  List<UserModel> get filteredUsers {
-    if (_query.isEmpty) return _allUsers;
-    return _allUsers
-        .where((u) => u.name.toLowerCase().contains(_query.toLowerCase()))
-        .toList();
-  }
+  List<UserModel> get filteredUsers => _filteredUsers;
 
-  void setUsers(List<UserModel> users) {
-    _allUsers = users;
-    notifyListeners();
-  }
-
+  // ───── FILTER ─────
   void updateQuery(String newQuery) {
     _query = newQuery;
+    _applyFilter();
+  }
+
+  void _applyFilter() {
+    if (_query.isEmpty) {
+      _filteredUsers = _allUsers;
+    } else {
+      final q = _query.toLowerCase();
+      _filteredUsers = _allUsers.where((user) {
+        return user.name.toLowerCase().contains(q) ||
+            user.email.toLowerCase().contains(q) ||
+            user.phone.contains(q);
+      }).toList();
+    }
+
     notifyListeners();
   }
 
-  // ───── Voice Search ─────
+  // ───── VOICE SEARCH ─────
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   bool get isListening => _isListening;
 
   Future<void> toggleVoiceListening() async {
     try {
-      // Start Listening
       if (!_isListening) {
         bool available = await _speech.initialize(
           onStatus: (val) => log('Speech status: $val'),
@@ -48,15 +77,11 @@ class UserSearchProvider extends ChangeNotifier {
 
           await _speech.listen(
             onResult: (val) {
-              _query = val.recognizedWords;
-              notifyListeners(); // update textField + filtered list live
+              updateQuery(val.recognizedWords);
             },
           );
-        } else {
-          log('Speech not available');
         }
       } else {
-        // Stop Listening
         _isListening = false;
         await _speech.stop();
         notifyListeners();

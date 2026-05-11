@@ -6,8 +6,8 @@ import 'package:user_app/features/foods/data/model/food_item_model.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 
 // IMPORTANT: This file contains the REAL edit dialog
-import 'package:user_app/features/foods/presentation/widgets/food_item_add_dilog.dart';
-import 'package:user_app/features/foods/presentation/widgets/food_item_edit_dilog.dart';
+import 'package:user_app/features/foods/presentation/widgets/food_item_add_dialog.dart';
+import 'package:user_app/features/foods/presentation/widgets/food_item_edit_dialog.dart';
 
 class FoodController {
   /// ADD FOOD
@@ -33,6 +33,20 @@ class FoodController {
             required bool isBestSeller,
           }) async {
             try {
+              if (imageBytes == null) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Please select an image before adding food item.",
+                      ),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                }
+                return false;
+              }
+
               await foodServices.addFoodItem(
                 FoodItemModel(
                   name: name,
@@ -49,7 +63,7 @@ class FoodController {
                   imageUrl: '',
                   foodItemId: '',
                 ),
-                imageBytes!,
+                imageBytes,
               );
 
               if (context.mounted) {
@@ -60,6 +74,8 @@ class FoodController {
                   ),
                 );
               }
+
+              return true;
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -69,6 +85,8 @@ class FoodController {
                   ),
                 );
               }
+
+              return false;
             }
           },
     );
@@ -124,6 +142,8 @@ class FoodController {
                   ),
                 );
               }
+
+              return true;
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -133,6 +153,8 @@ class FoodController {
                   ),
                 );
               }
+
+              return false;
             }
           },
     );

@@ -21,33 +21,52 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 230,
       height: 120,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.deepBlue.withOpacity(0.55),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.lightBlue.withOpacity(0.08)),
       ),
-      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // TOP ROW
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: CustomTextStyles.addCategory),
-              Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(5),
+              Text(
+                title,
+                style: CustomTextStyles.addCategory.copyWith(
+                  color: AppColors.pureWhite.withOpacity(0.75),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Icon(icon, color: AppColors.pureWhite, size: 18),
+              ),
+
+              Container(
+                height: 36,
+                width: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.lightBlue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.darkBlue, size: 18),
               ),
             ],
           ),
+
           const Spacer(),
-          Text(count, style: CustomTextStyles.nameStyle),
+
+          // COUNT
+          Text(
+            count,
+            style: CustomTextStyles.nameStyle.copyWith(
+              color: AppColors.pureWhite,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
       ),
     );

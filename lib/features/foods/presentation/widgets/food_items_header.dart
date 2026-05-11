@@ -17,7 +17,7 @@ class FoodItemsHeader extends StatelessWidget {
         const Text("Food Management", style: CustomTextStyles.loginHeading),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.mediumBlue,
+            backgroundColor: AppColors.deepBlue,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),

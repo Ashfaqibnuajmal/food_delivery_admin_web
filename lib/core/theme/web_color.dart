@@ -8,6 +8,7 @@ class AppColors {
   static const Color lightBlue = Color(0xFF00A8E8);
 
   // New colors for dialogs
-  static const Color errorRed = Color(0xFFE53E3E); // for delete warnings
+  static const Color errorRed = Color(0xFFE53E3E);
+  static const Color green = Colors.green; // for delete warnings
   static const Color lightGrey = Color(0xFFE5E5E5); // for no button background
 }

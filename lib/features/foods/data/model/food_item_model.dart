@@ -4,6 +4,7 @@ class FoodItemModel {
   final String foodItemId;
   final String name;
   final String imageUrl;
+  final String cloudinaryPublicId;
   final int prepTimeMinutes; // preparation time in minutes
   final double calories; // calorie count
   final String description; // description text
@@ -19,6 +20,7 @@ class FoodItemModel {
     required this.foodItemId,
     required this.name,
     required this.imageUrl,
+    this.cloudinaryPublicId = "",
     this.prepTimeMinutes = 0,
     this.calories = 0.0,
     this.description = "",
@@ -30,12 +32,13 @@ class FoodItemModel {
     this.halfPrice,
     this.isBestSeller = false,
   });
-
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toCreateMap() {
     return {
       "foodItemId": foodItemId,
       "name": name,
+      "nameLower": name.toLowerCase().trim(),
       "imageUrl": imageUrl,
+      "cloudinaryPublicId": cloudinaryPublicId,
       "prepTimeMinutes": prepTimeMinutes,
       "calories": calories,
       "description": description,
@@ -47,6 +50,28 @@ class FoodItemModel {
       "halfPrice": halfPrice,
       "isBestSeller": isBestSeller,
       "createdAt": FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
+    };
+  }
+
+  Map<String, dynamic> toUpdateMap() {
+    return {
+      "foodItemId": foodItemId,
+      "name": name,
+      "nameLower": name.toLowerCase().trim(),
+      "imageUrl": imageUrl,
+      "cloudinaryPublicId": cloudinaryPublicId,
+      "prepTimeMinutes": prepTimeMinutes,
+      "calories": calories,
+      "description": description,
+      "price": price,
+      "category": category,
+      "isCompo": isCompo,
+      "isTodayOffer": isTodayOffer,
+      "isHalfAvailable": isHalfAvailable,
+      "halfPrice": halfPrice,
+      "isBestSeller": isBestSeller,
+      "updatedAt": FieldValue.serverTimestamp(),
     };
   }
 
@@ -55,6 +80,7 @@ class FoodItemModel {
       foodItemId: map["foodItemId"] ?? "",
       name: map["name"] ?? "",
       imageUrl: map["imageUrl"] ?? "",
+      cloudinaryPublicId: map["cloudinaryPublicId"] ?? "",
       prepTimeMinutes: map["prepTimeMinutes"] is int
           ? map["prepTimeMinutes"]
           : int.tryParse(map["prepTimeMinutes"]?.toString() ?? "0") ?? 0,
@@ -74,6 +100,7 @@ class FoodItemModel {
     String? foodItemId,
     String? name,
     String? imageUrl,
+    String? cloudinaryPublicId,
     int? prepTimeMinutes,
     double? calories,
     String? description,
@@ -89,6 +116,8 @@ class FoodItemModel {
       foodItemId: foodItemId ?? this.foodItemId,
       name: name ?? this.name,
       imageUrl: imageUrl ?? this.imageUrl,
+      cloudinaryPublicId: cloudinaryPublicId ?? this.cloudinaryPublicId,
+
       prepTimeMinutes: prepTimeMinutes ?? this.prepTimeMinutes,
       calories: calories ?? this.calories,
       description: description ?? this.description,

@@ -3,7 +3,7 @@ class UserModel {
   final String name;
   final String email;
   final String phone;
-  late final String status;
+  final String status;
 
   UserModel({
     required this.uid,
@@ -12,17 +12,15 @@ class UserModel {
     required this.phone,
     required this.status,
   });
-
   factory UserModel.fromMap(Map<String, dynamic> map, [String? docId]) {
     return UserModel(
       uid: docId ?? map['uid'] ?? '',
       name: map['name'] ?? 'Unknown',
-      email: map['email'] ?? '123@gmail.com',
-      phone: map['phone'] ?? '9876543210',
+      email: map['email'] ?? '', // ✅ FIXED
+      phone: map['phone'] ?? '', // ✅ FIXED
       status: map['status'] ?? 'active',
     );
   }
-
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

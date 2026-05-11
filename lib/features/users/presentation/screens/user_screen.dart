@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/core/widgets/voice_search.bar.dart';
-import 'package:user_app/features/users/data/services/user_services.dart';
+import 'package:user_app/core/widgets/voice_search_bar.dart';
 import 'package:user_app/features/users/presentation/widget/user_summary_card.dart';
 import 'package:user_app/features/users/presentation/widget/user_table.dart';
 
@@ -11,8 +10,6 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userService = UserServices();
-
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: SafeArea(
@@ -28,9 +25,9 @@ class UsersScreen extends StatelessWidget {
               const SizedBox(height: 25),
               const VoiceSearchBar(),
               const SizedBox(height: 30),
-              UserSummaryCards(userService: userService),
+              const UserSummaryCards(), // ✅ CLEAN
               const SizedBox(height: 40),
-              UserTable(userService: userService),
+              const UserTable(), // ✅ CLEAN
               const SizedBox(height: 20),
             ],
           ),
