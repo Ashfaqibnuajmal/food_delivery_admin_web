@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/categories/presentation/screens/categories_screen.dart';
 import 'package:user_app/features/chat/presentation/screens/chat_list_screen.dart';
-import 'package:user_app/features/dashboard/dashboard_screen.dart';
+import 'package:user_app/features/dashboard/presentation/screen/dashboard_screen.dart';
 import 'package:user_app/features/due_payment/presentation/screens/due_payment_screen.dart';
 import 'package:user_app/features/expances/presentation/screens/expense_screen.dart';
 import 'package:user_app/features/foods/presentation/screens/food_item_screen.dart';
