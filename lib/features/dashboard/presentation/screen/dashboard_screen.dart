@@ -37,6 +37,7 @@ class DashboardScreen extends StatelessWidget {
                     child: SectionCard(
                       title: 'Revenue',
                       icon: Icons.bar_chart,
+                      height: 330,
                       child: RevenueChart(),
                     ),
                   ),
@@ -48,7 +49,7 @@ class DashboardScreen extends StatelessWidget {
                     child: SectionCard(
                       title: 'Orders',
                       icon: Icons.receipt,
-                      height: 340,
+                      height: 330,
                       child: DashboardStatusSection(controller: _controller),
                     ),
                   ),

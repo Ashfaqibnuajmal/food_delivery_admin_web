@@ -37,13 +37,19 @@ class DashboardStatsService {
         .map((snapshot) {
           final orders = snapshot.docs;
 
-          final salesTotal = orders.fold<num>(
-            0,
-            (sum, doc) => sum + _toNumber(doc.data()['totalAmount']),
-          );
+          // count all orders regardless of status
+          final ordersCount = orders.length;
+
+          // sum totalAmount only for Delivered orders
+          final salesTotal = orders
+              .where((doc) => doc.data()['orderStatus'] == 'Delivered')
+              .fold<num>(
+                0,
+                (sum, doc) => sum + _toNumber(doc.data()['totalAmount']),
+              );
 
           return OrderStatModel(
-            ordersCount: orders.length,
+            ordersCount: ordersCount,
             salesTotal: salesTotal,
           );
         });

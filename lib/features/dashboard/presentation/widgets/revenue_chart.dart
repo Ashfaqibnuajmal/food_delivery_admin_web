@@ -12,8 +12,6 @@ class RevenueChart extends StatefulWidget {
 
 class _RevenueChartState extends State<RevenueChart> {
   final _service = RevenueService();
-
-  // fetch both at the same time
   late Future<(List<DailyRevenue>, double)> _future;
 
   @override
@@ -65,9 +63,10 @@ class _RevenueChartState extends State<RevenueChart> {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // ← shrink to content, no overflow
           children: [
             // ─────────────────────────────────────────────────
-            // OVERVIEW CARDS — Week & Month
+            // OVERVIEW CARDS
             // ─────────────────────────────────────────────────
             Row(
               children: [
@@ -85,13 +84,14 @@ class _RevenueChartState extends State<RevenueChart> {
               ],
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // ─────────────────────────────────────────────────
-            // BAR CHART
+            // BAR CHART — fixed safe height
             // ─────────────────────────────────────────────────
             SizedBox(
-              height: 160,
+              height:
+                  130, // ← reduced: bar(80) + text(11) + spacing(14+8) + label(14) = 127 ✅
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: data.map((item) {
@@ -99,19 +99,22 @@ class _RevenueChartState extends State<RevenueChart> {
                       item.date.day == DateTime.now().day &&
                       item.date.month == DateTime.now().month;
 
+                  // max bar = 80px (modest, won't tower)
                   final barHeight = maxAmount > 0
-                      ? ((item.totalAmount / maxAmount) * 120).clamp(
-                          item.totalAmount > 0 ? 6.0 : 4.0,
-                          120.0,
+                      ? ((item.totalAmount / maxAmount) * 80).clamp(
+                          item.totalAmount > 0 ? 5.0 : 3.0,
+                          80.0, // ← was 120, now 80 — keeps bars short
                         )
-                      : 4.0;
+                      : 3.0;
 
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min, // ← critical fix
                         children: [
+                          // Value label — only show if bar has value
                           if (item.totalAmount > 0)
                             Text(
                               "₹${item.totalAmount.toInt()}",
@@ -125,16 +128,23 @@ class _RevenueChartState extends State<RevenueChart> {
                                     : FontWeight.normal,
                               ),
                               textAlign: TextAlign.center,
-                            ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            )
+                          else
+                            const SizedBox(
+                              height: 11,
+                            ), // ← keeps alignment even for empty bars
 
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 4),
 
+                          // Bar
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.easeOut,
                             height: barHeight,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(5),
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -148,15 +158,16 @@ class _RevenueChartState extends State<RevenueChart> {
                             ),
                           ),
 
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
 
+                          // Day label
                           Text(
                             item.day,
                             style: TextStyle(
                               color: AppColors.pureWhite.withOpacity(
                                 isToday ? 1.0 : 0.45,
                               ),
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: isToday
                                   ? FontWeight.bold
                                   : FontWeight.normal,
@@ -230,6 +241,8 @@ class _OverviewCard extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
