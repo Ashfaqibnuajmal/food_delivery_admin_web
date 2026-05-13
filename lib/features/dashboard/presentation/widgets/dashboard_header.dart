@@ -3,8 +3,8 @@ import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/dashboard/enum/month_name.dart';
 
-class TopBar extends StatelessWidget {
-  const TopBar({super.key});
+class DashboardHeader extends StatelessWidget {
+  const DashboardHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

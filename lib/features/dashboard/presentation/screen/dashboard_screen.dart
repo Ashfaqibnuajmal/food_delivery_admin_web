@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/dashboard/presentation/widgets/dashboard_section.dart';
+import 'package:user_app/features/dashboard/controller/dashboard_stat_controller.dart';
+import 'package:user_app/features/dashboard/presentation/widgets/dashboard_status_section.dart';
+import 'package:user_app/features/dashboard/presentation/widgets/revenue_chart.dart';
+import 'package:user_app/features/dashboard/presentation/widgets/section_card.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/stat_card_row.dart';
-import 'package:user_app/features/dashboard/presentation/widgets/topbar.dart';
+import 'package:user_app/features/dashboard/presentation/widgets/dashboard_header.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final _controller = DashboardStatController();
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: SafeArea(
@@ -16,8 +20,8 @@ class DashboardScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              TopBar(),
+            children: [
+              DashboardHeader(),
 
               SizedBox(height: 24),
 
@@ -25,7 +29,31 @@ class DashboardScreen extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              DashboardSection(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: SectionCard(
+                      title: 'Revenue',
+                      icon: Icons.bar_chart,
+                      child: RevenueChart(),
+                    ),
+                  ),
+
+                  SizedBox(width: 16),
+
+                  Expanded(
+                    flex: 2,
+                    child: SectionCard(
+                      title: 'Orders',
+                      icon: Icons.receipt,
+                      height: 340,
+                      child: DashboardStatusSection(controller: _controller),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

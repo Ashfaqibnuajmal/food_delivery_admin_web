@@ -1,5 +1,5 @@
-import 'package:user_app/features/dashboard/model/order_stat_model.dart';
-import 'package:user_app/features/dashboard/service/dashboard_stat_service.dart';
+import 'package:user_app/features/dashboard/data/models/order_stat_model.dart';
+import 'package:user_app/features/dashboard/data/services/dashboard_stat_service.dart';
 
 class DashboardStatController {
   final DashboardStatsService _statsService;
@@ -43,5 +43,12 @@ class DashboardStatController {
 
   bool trendUp(num current, num previous) {
     return _statsService.trendUp(current, previous);
+  } // cache it so StatelessWidget rebuilds don't re-fetch
+
+  Future<Map<String, int>>? _orderStatusFuture;
+
+  Future<Map<String, int>> getOrderStatusCounts() {
+    _orderStatusFuture ??= _statsService.getOrderStatusCounts();
+    return _orderStatusFuture!;
   }
 }

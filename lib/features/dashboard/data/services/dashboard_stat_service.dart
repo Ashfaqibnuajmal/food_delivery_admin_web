@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:user_app/features/dashboard/model/order_stat_model.dart';
+import 'package:user_app/features/dashboard/data/models/order_stat_model.dart';
 
 class DashboardStatsService {
   final FirebaseFirestore _firestore;
@@ -53,6 +53,7 @@ class DashboardStatsService {
     return _firestore.collection('DueUsers').snapshots().map((snapshot) {
       return snapshot.docs.fold<num>(
         0,
+        // ignore: avoid_types_as_parameter_names
         (sum, doc) => sum + _toNumber(doc.data()['balance']),
       );
     });
@@ -77,5 +78,27 @@ class DashboardStatsService {
 
   bool trendUp(num current, num previous) {
     return current >= previous;
+  }
+
+  Future<Map<String, int>> getOrderStatusCounts() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Orders')
+        .get();
+
+    final Map<String, int> counts = {
+      'Making': 0,
+      'Packing': 0,
+      'Out for Delivery': 0,
+      'Delivered': 0,
+    };
+
+    for (final doc in snapshot.docs) {
+      final status = doc.data()['orderStatus'] as String? ?? '';
+      if (counts.containsKey(status)) {
+        counts[status] = counts[status]! + 1;
+      }
+    }
+
+    return counts;
   }
 }
