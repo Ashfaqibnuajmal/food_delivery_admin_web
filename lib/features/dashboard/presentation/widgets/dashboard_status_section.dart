@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/dashboard/controller/dashboard_stat_controller.dart';
+import 'package:user_app/features/dashboard/controller/dashboard_controller.dart';
 
 class DashboardStatusSection extends StatelessWidget {
-  final DashboardStatController controller;
+  final DashboardController controller;
 
   const DashboardStatusSection({super.key, required this.controller});
 

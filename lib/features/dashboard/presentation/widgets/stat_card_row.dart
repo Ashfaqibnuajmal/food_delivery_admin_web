@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
-import 'package:user_app/features/dashboard/controller/dashboard_stat_controller.dart';
-import 'package:user_app/features/dashboard/data/models/order_stat_model.dart';
+import 'package:user_app/features/dashboard/controller/dashboard_controller.dart';
+import 'package:user_app/features/dashboard/data/models/dashboard_models.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/stat_card.dart';
 
 class StatCardsRow extends StatelessWidget {
   const StatCardsRow({super.key});
 
-  static final DashboardStatController _controller = DashboardStatController();
+  static final DashboardController _controller = DashboardController();
 
   @override
   Widget build(BuildContext context) {

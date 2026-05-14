@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/dashboard/controller/dashboard_stat_controller.dart';
+import 'package:user_app/features/dashboard/controller/dashboard_controller.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/dashboard_status_section.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/revenue_chart.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/section_card.dart';
@@ -12,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _controller = DashboardStatController();
+    final controller = DashboardController();
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: SafeArea(
@@ -38,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
                       title: 'Revenue',
                       icon: Icons.bar_chart,
                       height: 330,
-                      child: RevenueChart(),
+                      child: RevenueChart(controller: controller),
                     ),
                   ),
 
@@ -50,7 +50,7 @@ class DashboardScreen extends StatelessWidget {
                       title: 'Orders',
                       icon: Icons.receipt,
                       height: 330,
-                      child: DashboardStatusSection(controller: _controller),
+                      child: DashboardStatusSection(controller: controller),
                     ),
                   ),
                 ],

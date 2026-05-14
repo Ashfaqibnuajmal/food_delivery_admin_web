@@ -1,35 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/dashboard/data/models/daily_revenue.dart';
-import 'package:user_app/features/dashboard/data/services/revenue_service.dart';
+import 'package:user_app/features/dashboard/controller/dashboard_controller.dart';
+import 'package:user_app/features/dashboard/data/models/dashboard_models.dart';
 
-class RevenueChart extends StatefulWidget {
-  const RevenueChart({super.key});
+class RevenueChart extends StatelessWidget {
+  final DashboardController controller;
 
-  @override
-  State<RevenueChart> createState() => _RevenueChartState();
-}
-
-class _RevenueChartState extends State<RevenueChart> {
-  final _service = RevenueService();
-  late Future<(List<DailyRevenue>, double)> _future;
-
-  @override
-  void initState() {
-    super.initState();
-    _future =
-        Future.wait([
-          _service.getWeeklyRevenue(),
-          _service.getMonthlyTotal(),
-        ]).then(
-          (results) => (results[0] as List<DailyRevenue>, results[1] as double),
-        );
-  }
+  const RevenueChart({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<(List<DailyRevenue>, double)>(
-      future: _future,
+      future: controller.getRevenueData(),
       builder: (context, snapshot) {
         // ── Loading ──────────────────────────────────────────
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -54,16 +36,12 @@ class _RevenueChartState extends State<RevenueChart> {
 
         final data = snapshot.data!.$1;
         final monthlyTotal = snapshot.data!.$2;
-
-        final maxAmount = data.isEmpty
-            ? 1.0
-            : data.map((e) => e.totalAmount).reduce((a, b) => a > b ? a : b);
-
-        final weekTotal = data.fold(0.0, (sum, e) => sum + e.totalAmount);
+        final maxAmount = controller.getMaxAmount(data);
+        final weekTotal = controller.getWeekTotal(data);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // ← shrink to content, no overflow
+          mainAxisSize: MainAxisSize.min,
           children: [
             // ─────────────────────────────────────────────────
             // OVERVIEW CARDS
@@ -87,34 +65,27 @@ class _RevenueChartState extends State<RevenueChart> {
             const SizedBox(height: 20),
 
             // ─────────────────────────────────────────────────
-            // BAR CHART — fixed safe height
+            // BAR CHART
             // ─────────────────────────────────────────────────
             SizedBox(
-              height:
-                  130, // ← reduced: bar(80) + text(11) + spacing(14+8) + label(14) = 127 ✅
+              height: 130,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: data.map((item) {
-                  final isToday =
-                      item.date.day == DateTime.now().day &&
-                      item.date.month == DateTime.now().month;
-
-                  // max bar = 80px (modest, won't tower)
-                  final barHeight = maxAmount > 0
-                      ? ((item.totalAmount / maxAmount) * 80).clamp(
-                          item.totalAmount > 0 ? 5.0 : 3.0,
-                          80.0, // ← was 120, now 80 — keeps bars short
-                        )
-                      : 3.0;
+                  final isToday = controller.isToday(item.date);
+                  final barHeight = controller.getBarHeight(
+                    item.totalAmount,
+                    maxAmount,
+                  );
 
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min, // ← critical fix
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Value label — only show if bar has value
+                          // Value label
                           if (item.totalAmount > 0)
                             Text(
                               "₹${item.totalAmount.toInt()}",
@@ -132,9 +103,7 @@ class _RevenueChartState extends State<RevenueChart> {
                               maxLines: 1,
                             )
                           else
-                            const SizedBox(
-                              height: 11,
-                            ), // ← keeps alignment even for empty bars
+                            const SizedBox(height: 11),
 
                           const SizedBox(height: 4),
 
