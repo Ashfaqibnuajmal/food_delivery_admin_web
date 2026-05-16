@@ -7,7 +7,7 @@ import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/features/auth/provider/login_provider.dart';
 import 'package:user_app/features/categories/data/services/category_services.dart';
-import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
+import 'package:user_app/features/categories/provider/category_provider.dart';
 import 'package:user_app/features/chat/data/services/chat_services.dart';
 import 'package:user_app/features/chat/logic/provider/chat_provider.dart';
 import 'package:user_app/features/due_payment/provider/due_entry_action_provider.dart';
@@ -15,7 +15,7 @@ import 'package:user_app/features/due_payment/provider/due_entry_form_validator.
 import 'package:user_app/features/due_payment/provider/due_user_action_provider.dart';
 import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
-import 'package:user_app/features/foods/provider/dialogstateprovider.dart';
+import 'package:user_app/features/foods/logic/provider/dialogstateprovider.dart';
 import 'package:user_app/features/home/home.dart';
 import 'package:user_app/features/notification/provider/notification_provider.dart';
 import 'package:user_app/features/users/data/services/user_services.dart';

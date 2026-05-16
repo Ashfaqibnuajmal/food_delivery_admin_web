@@ -5,7 +5,9 @@ import 'package:user_app/features/dashboard/data/models/dashboard_models.dart';
 import 'package:user_app/features/dashboard/presentation/widgets/stat_card.dart';
 
 class StatCardsRow extends StatelessWidget {
-  const StatCardsRow({super.key});
+  final bool isMobile;
+
+  const StatCardsRow({super.key, required this.isMobile});
 
   static final DashboardController _controller = DashboardController();
 
@@ -36,79 +38,114 @@ class StatCardsRow extends StatelessWidget {
                 yesterdaySnapshot.data ??
                 const OrderStatModel(ordersCount: 0, salesTotal: 0);
 
-            return Row(
-              children: [
-                Expanded(
-                  child: StatCard(
-                    title: "Orders Today",
-                    value: todayStats.ordersCount.toString(),
-                    icon: Icons.shopping_bag_rounded,
-                    trend: _controller.trendText(
-                      todayStats.ordersCount,
-                      yesterdayStats.ordersCount,
-                    ),
-                    trendUp: _controller.trendUp(
-                      todayStats.ordersCount,
-                      yesterdayStats.ordersCount,
-                    ),
+            final cards = [
+              Expanded(
+                child: StatCard(
+                  title: "Orders Today",
+                  value: todayStats.ordersCount.toString(),
+                  icon: Icons.shopping_bag_rounded,
+                  trend: _controller.trendText(
+                    todayStats.ordersCount,
+                    yesterdayStats.ordersCount,
+                  ),
+                  trendUp: _controller.trendUp(
+                    todayStats.ordersCount,
+                    yesterdayStats.ordersCount,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: StatCard(
-                    title: "Sales Today",
-                    value: "₹${todayStats.salesTotal.toStringAsFixed(0)}",
-                    icon: Icons.payments_rounded,
-                    trend: _controller.trendText(
-                      todayStats.salesTotal,
-                      yesterdayStats.salesTotal,
-                    ),
-                    trendUp: _controller.trendUp(
-                      todayStats.salesTotal,
-                      yesterdayStats.salesTotal,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: StreamBuilder<num>(
-                    stream: _controller.getDueBalance(),
-                    builder: (context, snapshot) {
-                      final dueBalance = snapshot.data ?? 0;
+              ),
 
-                      return StatCard(
-                        title: "Due Balance",
-                        value: "₹${dueBalance.toStringAsFixed(0)}",
-                        icon: Icons.account_balance_wallet_rounded,
-                        trend: "Pending",
-                        trendUp: false,
-                        showTrendIcon: false,
-                        footerText: "from due users",
-                      );
-                    },
+              Expanded(
+                child: StatCard(
+                  title: "Sales Today",
+                  value: "₹${todayStats.salesTotal.toStringAsFixed(0)}",
+                  icon: Icons.payments_rounded,
+                  trend: _controller.trendText(
+                    todayStats.salesTotal,
+                    yesterdayStats.salesTotal,
+                  ),
+                  trendUp: _controller.trendUp(
+                    todayStats.salesTotal,
+                    yesterdayStats.salesTotal,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: StreamBuilder<int>(
-                    stream: _controller.getUsersCount(),
-                    builder: (context, snapshot) {
-                      final totalUsers = snapshot.data ?? 0;
+              ),
 
-                      return StatCard(
-                        title: "Total Users",
-                        value: totalUsers.toString(),
-                        icon: Icons.people_alt_rounded,
-                        trend: "Users",
-                        trendUp: true,
-                        showTrendIcon: false,
-                        footerText: "registered",
-                      );
-                    },
-                  ),
+              Expanded(
+                child: StreamBuilder<num>(
+                  stream: _controller.getDueBalance(),
+                  builder: (context, snapshot) {
+                    final dueBalance = snapshot.data ?? 0;
+
+                    return StatCard(
+                      title: "Due Balance",
+                      value: "₹${dueBalance.toStringAsFixed(0)}",
+                      icon: Icons.account_balance_wallet_rounded,
+                      trend: "Pending",
+                      trendUp: false,
+                      showTrendIcon: false,
+                      footerText: "from due users",
+                    );
+                  },
                 ),
-              ],
-            );
+              ),
+
+              Expanded(
+                child: StreamBuilder<int>(
+                  stream: _controller.getUsersCount(),
+                  builder: (context, snapshot) {
+                    final totalUsers = snapshot.data ?? 0;
+
+                    return StatCard(
+                      title: "Total Users",
+                      value: totalUsers.toString(),
+                      icon: Icons.people_alt_rounded,
+                      trend: "Users",
+                      trendUp: true,
+                      showTrendIcon: false,
+                      footerText: "registered",
+                    );
+                  },
+                ),
+              ),
+            ];
+
+            return isMobile
+                ? Column(
+                    children: [
+                      Row(
+                        children: [
+                          cards[0],
+                          const SizedBox(width: 12),
+                          cards[1],
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Row(
+                        children: [
+                          cards[2],
+                          const SizedBox(width: 12),
+                          cards[3],
+                        ],
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      cards[0],
+                      const SizedBox(width: 12),
+
+                      cards[1],
+                      const SizedBox(width: 12),
+
+                      cards[2],
+                      const SizedBox(width: 12),
+
+                      cards[3],
+                    ],
+                  );
           },
         );
       },

@@ -20,15 +20,25 @@ class ChatLeftPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Container(
       color: AppColors.darkBlue,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// 🔹 TITLE
-          const Padding(
-            padding: EdgeInsets.all(12),
-            child: Text("Chats", style: CustomTextStyles.title),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: width < 1100 ? 14 : 18,
+              vertical: width < 1100 ? 14 : 18,
+            ),
+            child: Text(
+              "Chats",
+              style: CustomTextStyles.title.copyWith(
+                fontSize: width < 1100 ? 24 : 30,
+              ),
+            ),
           ),
 
           /// 🔹 CHAT LIST
@@ -44,6 +54,8 @@ class ChatLeftPanel extends StatelessWidget {
                     ),
                   );
                 }
+
+                /// ❌ ERROR
                 if (snapshot.hasError) {
                   return const Center(
                     child: Text(
@@ -66,13 +78,18 @@ class ChatLeftPanel extends StatelessWidget {
                 final chats = snapshot.data!;
 
                 return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   itemCount: chats.length,
+
                   itemBuilder: (context, index) {
                     final chat = chats[index];
 
                     final chatUserId = chat.userId;
+
                     final userName = chat.userName;
+
                     final lastMessage = chat.lastMessage;
+
                     final unread = chat.unreadByAdmin;
 
                     final timeStr = utils.formatTime(chat.lastMessageTime);
@@ -82,10 +99,18 @@ class ChatLeftPanel extends StatelessWidget {
                         final isSelected =
                             provider.selectedUserId == chatUserId;
 
-                        return Container(
-                          color: isSelected
-                              ? AppColors.mediumBlue
-                              : Colors.transparent,
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.mediumBlue.withOpacity(0.45)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                           child: UserChatTile(
                             name: userName,
                             message: lastMessage,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 
 class OrderItemRow extends StatelessWidget {
@@ -43,10 +44,7 @@ class OrderItemRow extends StatelessWidget {
             child: Text(
               '${index + 1}',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.pureWhite.withOpacity(0.5),
-                fontWeight: FontWeight.w600,
-              ),
+              style: CustomTextStyles.mediumWhiteText,
             ),
           ),
 
@@ -56,11 +54,7 @@ class OrderItemRow extends StatelessWidget {
             child: Text(
               itemName,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.pureWhite,
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
+              style: CustomTextStyles.bigWhiteText,
             ),
           ),
 
@@ -83,11 +77,7 @@ class OrderItemRow extends StatelessWidget {
                 child: Text(
                   plateLabel,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.lightBlue,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: CustomTextStyles.mediumWhiteText,
                 ),
               ),
             ),
@@ -99,10 +89,7 @@ class OrderItemRow extends StatelessWidget {
             child: Text(
               '$quantity',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.pureWhite,
-                fontWeight: FontWeight.w700,
-              ),
+              style: CustomTextStyles.bigWhiteText,
             ),
           ),
 
@@ -112,10 +99,7 @@ class OrderItemRow extends StatelessWidget {
             child: Text(
               _fmt(unitPrice),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.pureWhite.withOpacity(0.75),
-                fontSize: 13,
-              ),
+              style: CustomTextStyles.bigWhiteText,
             ),
           ),
 

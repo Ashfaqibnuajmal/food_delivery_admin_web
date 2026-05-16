@@ -8,7 +8,7 @@ import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
-import 'package:user_app/features/foods/provider/dialogstateprovider.dart';
+import 'package:user_app/features/foods/logic/provider/dialogstateprovider.dart';
 
 Future<void> customAddFoodItemDialog({
   required BuildContext context,

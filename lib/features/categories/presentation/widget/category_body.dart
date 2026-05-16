@@ -8,7 +8,7 @@ import 'package:user_app/core/widgets/network_image_placeolder.dart';
 import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart';
 import 'package:user_app/features/categories/controller/category_controller.dart';
-import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
+import 'package:user_app/features/categories/provider/category_provider.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
 // ignore: must_be_immutable

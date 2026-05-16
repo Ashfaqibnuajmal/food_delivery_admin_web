@@ -5,7 +5,6 @@ class OrderStatModel {
   const OrderStatModel({required this.ordersCount, required this.salesTotal});
 }
 
-// ════════════════════════════════════════════════════════════
 class DailyRevenue {
   final String day; // "Mon", "Tue", etc.
   final double totalAmount; // sum of delivered orders that day

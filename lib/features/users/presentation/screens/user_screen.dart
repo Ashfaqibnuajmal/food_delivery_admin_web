@@ -10,25 +10,34 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isMobile ? 12 : 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'User Management',
-                style: CustomTextStyles.loginHeading,
+                style: CustomTextStyles.loginHeading.copyWith(
+                  fontSize: isMobile ? 22 : null,
+                ),
               ),
-              const SizedBox(height: 25),
+
+              SizedBox(height: isMobile ? 18 : 25),
+
               const VoiceSearchBar(),
-              const SizedBox(height: 30),
-              const UserSummaryCards(), // ✅ CLEAN
-              const SizedBox(height: 40),
-              const UserTable(), // ✅ CLEAN
-              const SizedBox(height: 20),
+
+              SizedBox(height: isMobile ? 20 : 30),
+
+              const UserSummaryCards(),
+
+              SizedBox(height: isMobile ? 25 : 40),
+
+              const Expanded(child: UserTable()),
             ],
           ),
         ),

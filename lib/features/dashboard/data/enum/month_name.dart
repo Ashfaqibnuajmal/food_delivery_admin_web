@@ -1,5 +1,3 @@
-// lib/core/utils/month_name.dart
-
 enum MonthName {
   jan('Jan'),
   feb('Feb'),

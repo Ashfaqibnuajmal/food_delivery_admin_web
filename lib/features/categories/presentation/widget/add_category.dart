@@ -4,7 +4,7 @@ import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/categories/controller/category_controller.dart';
-import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
+import 'package:user_app/features/categories/provider/category_provider.dart';
 
 custemAddDialog({
   required BuildContext context,

@@ -20,9 +20,11 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Container(
-      height: 120,
-      padding: const EdgeInsets.all(14),
+      height: isMobile ? 110 : 120,
+      padding: EdgeInsets.all(isMobile ? 12 : 14),
       decoration: BoxDecoration(
         color: AppColors.deepBlue.withOpacity(0.55),
         borderRadius: BorderRadius.circular(16),
@@ -31,39 +33,49 @@ class UserCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TOP ROW
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: CustomTextStyles.addCategory.copyWith(
-                  color: AppColors.pureWhite.withOpacity(0.75),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CustomTextStyles.addCategory.copyWith(
+                    color: AppColors.pureWhite.withOpacity(0.75),
+                    fontSize: isMobile ? 11 : 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
 
+              const SizedBox(width: 8),
+
               Container(
-                height: 36,
-                width: 36,
+                height: isMobile ? 32 : 36,
+                width: isMobile ? 32 : 36,
                 decoration: BoxDecoration(
                   color: AppColors.lightBlue,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
                 ),
-                child: Icon(icon, color: AppColors.darkBlue, size: 18),
+                child: Icon(
+                  icon,
+                  color: AppColors.darkBlue,
+                  size: isMobile ? 16 : 18,
+                ),
               ),
             ],
           ),
 
           const Spacer(),
 
-          // COUNT
           Text(
             count,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: CustomTextStyles.nameStyle.copyWith(
               color: AppColors.pureWhite,
-              fontSize: 24,
+              fontSize: isMobile ? 20 : 24,
               fontWeight: FontWeight.w800,
             ),
           ),

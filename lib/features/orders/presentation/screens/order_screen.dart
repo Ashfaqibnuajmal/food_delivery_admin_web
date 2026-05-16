@@ -6,7 +6,7 @@ import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/voice_search_bar.dart';
-import 'package:user_app/features/orders/enum/order_status.dart';
+import 'package:user_app/features/orders/data/enum/order_status.dart';
 import 'package:user_app/features/orders/presentation/widgets/order_screen/order_table_body.dart';
 import 'package:user_app/features/orders/presentation/widgets/order_screen/order_table_header.dart';
 

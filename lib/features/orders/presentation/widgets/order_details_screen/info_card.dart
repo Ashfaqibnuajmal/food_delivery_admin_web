@@ -16,8 +16,10 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(isMobile ? 14 : 18),
       decoration: BoxDecoration(
         color: AppColors.deepBlue.withOpacity(0.55),
         borderRadius: BorderRadius.circular(16),
@@ -30,27 +32,38 @@ class InfoCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: CustomTextStyles.addCategory.copyWith(
-                  color: AppColors.pureWhite,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CustomTextStyles.addCategory.copyWith(
+                    color: AppColors.pureWhite,
+                    fontWeight: FontWeight.w700,
+                    fontSize: isMobile ? 15 : null,
+                  ),
                 ),
               ),
 
+              const SizedBox(width: 10),
+
               Container(
-                height: 36,
-                width: 36,
+                height: isMobile ? 32 : 36,
+                width: isMobile ? 32 : 36,
                 decoration: BoxDecoration(
                   color: AppColors.lightBlue,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(isMobile ? 8 : 10),
                 ),
-                child: Icon(icon, color: AppColors.darkBlue, size: 18),
+                child: Icon(
+                  icon,
+                  color: AppColors.darkBlue,
+                  size: isMobile ? 16 : 18,
+                ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: isMobile ? 12 : 16),
 
           // CONTENT
           child,

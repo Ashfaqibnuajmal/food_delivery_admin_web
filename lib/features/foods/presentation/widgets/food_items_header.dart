@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/foods/controller/food_controller.dart';
+import 'package:user_app/features/foods/logic/controller/food_controller.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 
 class FoodItemsHeader extends StatelessWidget {

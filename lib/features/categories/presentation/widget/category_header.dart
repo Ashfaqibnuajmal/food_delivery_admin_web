@@ -4,7 +4,7 @@ import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/custom_snackbar.dart';
-import 'package:user_app/features/categories/presentation/provider/category_provider.dart';
+import 'package:user_app/features/categories/provider/category_provider.dart';
 import 'package:user_app/features/categories/presentation/widget/add_category.dart';
 
 class CategoryHeader extends StatelessWidget {

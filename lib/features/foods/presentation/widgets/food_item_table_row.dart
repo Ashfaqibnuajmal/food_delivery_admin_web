@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/network_image_placeolder.dart';
-import 'package:user_app/features/foods/controller/food_controller.dart';
+import 'package:user_app/features/foods/logic/controller/food_controller.dart';
 import 'package:user_app/features/foods/data/model/food_item_model.dart';
 
 class FoodItemTableRow extends StatelessWidget {

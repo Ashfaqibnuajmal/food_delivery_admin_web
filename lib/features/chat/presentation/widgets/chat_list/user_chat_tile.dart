@@ -28,6 +28,7 @@ class UserChatTile extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
+              radius: MediaQuery.of(context).size.width < 900 ? 22 : 26,
               backgroundColor: AppColors.deepBlue,
               backgroundImage: (imageUrl != null && imageUrl!.isNotEmpty)
                   ? NetworkImage(imageUrl!)

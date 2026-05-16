@@ -10,7 +10,7 @@ import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
 import 'package:user_app/features/foods/data/model/food_item_model.dart';
-import 'package:user_app/features/foods/provider/dialogstateprovider.dart';
+import 'package:user_app/features/foods/logic/provider/dialogstateprovider.dart';
 
 Future<void> customEditFoodItemDialog({
   required BuildContext context,

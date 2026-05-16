@@ -19,6 +19,8 @@ class OrderInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Expanded(
       flex: 3,
       child: InfoCard(
@@ -35,47 +37,61 @@ class OrderInfoCard extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                // Status pill
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.pureWhite.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.pureWhite.withOpacity(0.5),
+                // STATUS PILL
+                SizedBox(
+                  width: isMobile ? 120 : 140,
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                  ),
-                  child: Text(
-                    status,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: AppColors.pureWhite,
+                    decoration: BoxDecoration(
+                      color: AppColors.pureWhite.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.pureWhite.withOpacity(0.5),
+                      ),
+                    ),
+                    child: Text(
+                      status,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: AppColors.pureWhite,
+                      ),
                     ),
                   ),
                 ),
 
-                const SizedBox(width: 8),
-
-                // Payment pill
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorRed.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.errorRed),
-                  ),
-                  child: Text(
-                    paymentMethod,
-                    style: CustomTextStyles.smallRedText,
+                // PAYMENT PILL
+                SizedBox(
+                  width: isMobile ? 120 : 140,
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.errorRed.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.errorRed),
+                    ),
+                    child: Text(
+                      paymentMethod,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: CustomTextStyles.smallRedText,
+                    ),
                   ),
                 ),
               ],

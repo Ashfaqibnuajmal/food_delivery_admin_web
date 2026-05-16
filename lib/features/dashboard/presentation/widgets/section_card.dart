@@ -5,22 +5,25 @@ class SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-  final double? height; // ← make height optional
+  final double? height;
 
   const SectionCard({
     super.key,
     required this.title,
     required this.icon,
     required this.child,
-    this.height, // ← no longer required
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Container(
-      height: height, // ← null = wraps content automatically
-      clipBehavior: Clip.hardEdge, // ← prevents any overflow
-      padding: const EdgeInsets.all(20),
+      height: height,
+      width: double.infinity,
+      clipBehavior: Clip.hardEdge,
+      padding: EdgeInsets.all(isMobile ? 16 : 20),
       decoration: BoxDecoration(
         color: AppColors.deepBlue.withOpacity(0.45),
         borderRadius: BorderRadius.circular(16),
@@ -28,17 +31,19 @@ class SectionCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // ← shrink to content
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.lightBlue, size: 16),
+              Icon(icon, color: AppColors.lightBlue, size: isMobile ? 15 : 16),
+
               const SizedBox(width: 8),
+
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.pureWhite,
-                  fontSize: 15,
+                  fontSize: isMobile ? 14 : 15,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -47,7 +52,7 @@ class SectionCard extends StatelessWidget {
 
           Divider(color: AppColors.lightBlue.withOpacity(0.12), height: 24),
 
-          child, // ← removed Expanded, it caused the overflow
+          child,
         ],
       ),
     );

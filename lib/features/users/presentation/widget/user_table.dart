@@ -36,18 +36,18 @@ class _UserTableBody extends StatelessWidget {
     final provider = context.watch<UserSearchProvider>();
     final filtered = provider.filteredUsers;
 
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Container(
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
         color: AppColors.lightBlue.withOpacity(0.1),
         border: Border.all(color: AppColors.deepBlue, width: 2),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
         children: [
-          // Header Row
           Container(
-            height: 50,
+            height: isMobile ? 45 : 50,
             decoration: const BoxDecoration(
               color: AppColors.deepBlue,
               borderRadius: BorderRadius.only(
@@ -66,12 +66,12 @@ class _UserTableBody extends StatelessWidget {
             ),
           ),
 
-          // Filtered data rows
           Expanded(
             child: ListView.builder(
               itemCount: filtered.length,
               itemBuilder: (context, i) {
                 final user = filtered[i];
+
                 return UserTableRow(user: user);
               },
             ),
@@ -82,38 +82,48 @@ class _UserTableBody extends StatelessWidget {
   }
 }
 
-/// Each row UI only, logic-free
 class UserTableRow extends StatelessWidget {
   final UserModel user;
+
   const UserTableRow({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     final isActive = user.status.toLowerCase() == 'active';
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.symmetric(vertical: isMobile ? 10 : 12),
       child: Row(
         children: [
           DataCellText(user.name.isEmpty ? "No name" : user.name),
+
           DataCellText(user.phone.isEmpty ? "No number" : user.phone),
+
           DataCellText(user.email.isEmpty ? "No email" : user.email),
+
           Expanded(
             child: Center(
               child: Text(
                 isActive ? 'Active' : 'Blocked',
-                style: CustomTextStyles.userStatus(isActive),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CustomTextStyles.userStatus(
+                  isActive,
+                ).copyWith(fontSize: isMobile ? 11 : null),
               ),
             ),
           ),
+
           Expanded(
             child: Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isActive ? AppColors.deepBlue : Colors.green,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 8,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 10 : 18,
+                    vertical: isMobile ? 6 : 8,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -125,7 +135,10 @@ class UserTableRow extends StatelessWidget {
                 ),
                 child: Text(
                   isActive ? 'Block' : 'Unblock',
-                  style: const TextStyle(color: AppColors.pureWhite),
+                  style: TextStyle(
+                    color: AppColors.pureWhite,
+                    fontSize: isMobile ? 11 : 13,
+                  ),
                 ),
               ),
             ),

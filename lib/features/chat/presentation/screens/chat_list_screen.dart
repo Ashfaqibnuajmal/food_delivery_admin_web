@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/features/chat/data/services/chat_services.dart';
 import 'package:user_app/features/chat/logic/controller/chat_controller.dart';
-import 'package:user_app/features/chat/presentation/widgets/chat_list/left_panel.dart';
-import 'package:user_app/features/chat/presentation/widgets/chat_list/right_panel.dart';
+import 'package:user_app/features/chat/presentation/widgets/chat_list/chat_left_panel.dart';
+import 'package:user_app/features/chat/presentation/widgets/chat_window/chat_right_panel.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -28,19 +28,28 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     final chatService = context.read<ChatServices>();
 
-    return Row(
-      children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 280, maxWidth: 380),
-          child: ChatLeftPanel(chatService: chatService, utils: chatController),
-        ),
+    final width = MediaQuery.of(context).size.width;
 
-        Expanded(child: ChatRightPanel(controller: chatController)),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(12), // ← OLD DISTANCE BACK
+      child: Row(
+        children: [
+          SizedBox(
+            width: width < 1100 ? 300 : 320,
+            child: ChatLeftPanel(
+              chatService: chatService,
+              utils: chatController,
+            ),
+          ),
+
+          const SizedBox(width: 12), // ← SPACE BETWEEN LEFT & RIGHT
+
+          Expanded(child: ChatRightPanel(controller: chatController)),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/dashboard/controller/dashboard_controller.dart';
 import 'package:user_app/features/dashboard/data/models/dashboard_models.dart';
@@ -10,10 +11,11 @@ class RevenueChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return FutureBuilder<(List<DailyRevenue>, double)>(
       future: controller.getRevenueData(),
       builder: (context, snapshot) {
-        // ── Loading ──────────────────────────────────────────
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
             height: 200,
@@ -21,7 +23,6 @@ class RevenueChart extends StatelessWidget {
           );
         }
 
-        // ── Error ────────────────────────────────────────────
         if (snapshot.hasError) {
           return SizedBox(
             height: 200,
@@ -36,6 +37,7 @@ class RevenueChart extends StatelessWidget {
 
         final data = snapshot.data!.$1;
         final monthlyTotal = snapshot.data!.$2;
+
         final maxAmount = controller.getMaxAmount(data);
         final weekTotal = controller.getWeekTotal(data);
 
@@ -43,36 +45,51 @@ class RevenueChart extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ─────────────────────────────────────────────────
-            // OVERVIEW CARDS
-            // ─────────────────────────────────────────────────
-            Row(
-              children: [
-                _OverviewCard(
-                  icon: Icons.calendar_view_week_rounded,
-                  label: "Week Sales",
-                  value: "₹${weekTotal.toStringAsFixed(0)}",
-                ),
-                const SizedBox(width: 10),
-                _OverviewCard(
-                  icon: Icons.calendar_month_rounded,
-                  label: "Month Sales",
-                  value: "₹${monthlyTotal.toStringAsFixed(0)}",
-                ),
-              ],
-            ),
+            isMobile
+                ? Column(
+                    children: [
+                      _OverviewCard(
+                        icon: Icons.calendar_view_week_rounded,
+                        label: "Week Sales",
+                        value: "₹${weekTotal.toStringAsFixed(0)}",
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      _OverviewCard(
+                        icon: Icons.calendar_month_rounded,
+                        label: "Month Sales",
+                        value: "₹${monthlyTotal.toStringAsFixed(0)}",
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      _OverviewCard(
+                        icon: Icons.calendar_view_week_rounded,
+                        label: "Week Sales",
+                        value: "₹${weekTotal.toStringAsFixed(0)}",
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      _OverviewCard(
+                        icon: Icons.calendar_month_rounded,
+                        label: "Month Sales",
+                        value: "₹${monthlyTotal.toStringAsFixed(0)}",
+                      ),
+                    ],
+                  ),
 
             const SizedBox(height: 20),
 
-            // ─────────────────────────────────────────────────
-            // BAR CHART
-            // ─────────────────────────────────────────────────
             SizedBox(
               height: 130,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: data.map((item) {
                   final isToday = controller.isToday(item.date);
+
                   final barHeight = controller.getBarHeight(
                     item.totalAmount,
                     maxAmount,
@@ -85,7 +102,6 @@ class RevenueChart extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Value label
                           if (item.totalAmount > 0)
                             Text(
                               "₹${item.totalAmount.toInt()}",
@@ -93,7 +109,7 @@ class RevenueChart extends StatelessWidget {
                                 color: AppColors.pureWhite.withOpacity(
                                   isToday ? 0.9 : 0.4,
                                 ),
-                                fontSize: 9,
+                                fontSize: isMobile ? 8 : 9,
                                 fontWeight: isToday
                                     ? FontWeight.bold
                                     : FontWeight.normal,
@@ -107,7 +123,6 @@ class RevenueChart extends StatelessWidget {
 
                           const SizedBox(height: 4),
 
-                          // Bar
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.easeOut,
@@ -129,14 +144,13 @@ class RevenueChart extends StatelessWidget {
 
                           const SizedBox(height: 6),
 
-                          // Day label
                           Text(
                             item.day,
                             style: TextStyle(
                               color: AppColors.pureWhite.withOpacity(
                                 isToday ? 1.0 : 0.45,
                               ),
-                              fontSize: 10,
+                              fontSize: isMobile ? 9 : 10,
                               fontWeight: isToday
                                   ? FontWeight.bold
                                   : FontWeight.normal,
@@ -156,9 +170,6 @@ class RevenueChart extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// OVERVIEW STAT CARD
-// ─────────────────────────────────────────────────────────────
 class _OverviewCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -190,26 +201,20 @@ class _OverviewCard extends StatelessWidget {
               ),
               child: Icon(icon, color: AppColors.lightBlue, size: 18),
             ),
+
             const SizedBox(width: 10),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: AppColors.pureWhite.withOpacity(0.45),
-                      fontSize: 10,
-                    ),
-                  ),
+                  Text(label, style: CustomTextStyles.smallWhiteText),
+
                   const SizedBox(height: 2),
+
                   Text(
                     value,
-                    style: TextStyle(
-                      color: AppColors.pureWhite,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: CustomTextStyles.bigWhiteText,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
