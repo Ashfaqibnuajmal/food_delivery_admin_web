@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/input_decoration.dart';
-import 'package:user_app/features/due_payment/controller/due_entry_controller.dart';
 import 'package:user_app/features/due_payment/data/model/payment_entry_model.dart';
+import 'package:user_app/features/due_payment/logic/controller/due_entry_controller.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/due_entry_date_picker_button.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/due_entry_dialog_button.dart';
-import 'package:user_app/features/due_payment/provider/due_entry_action_provider.dart';
-import 'package:user_app/features/due_payment/provider/due_entry_form_validator.dart';
+import 'package:user_app/features/due_payment/logic/provider/due_entry_action_provider.dart';
+import 'package:user_app/features/due_payment/logic/provider/due_entry_form_validator.dart';
 import 'package:user_app/features/due_payment/utils/due_date_format.dart';
 
 Future<void> customEditEntryDialog({

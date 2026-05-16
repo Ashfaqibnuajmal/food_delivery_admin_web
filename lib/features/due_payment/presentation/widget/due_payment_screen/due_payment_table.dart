@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/delete_dilog.dart';
-import 'package:user_app/features/due_payment/controller/due_user_controller.dart';
 import 'package:user_app/features/due_payment/data/model/due_user_model.dart';
+import 'package:user_app/features/due_payment/logic/controller/due_user_controller.dart';
 import 'package:user_app/features/due_payment/presentation/screens/due_payment_view_screen.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_action.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_edit.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_table_cell.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
-import 'package:user_app/features/due_payment/provider/due_user_action_provider.dart';
+import 'package:user_app/features/due_payment/logic/provider/due_user_action_provider.dart';
 
 class DuePaymentTable extends StatelessWidget {
   final List<DueUserModel> users;

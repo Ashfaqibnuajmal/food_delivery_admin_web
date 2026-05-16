@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/delete_dilog.dart';
-import 'package:user_app/features/due_payment/controller/due_entry_controller.dart';
 import 'package:user_app/features/due_payment/data/model/payment_entry_model.dart';
+import 'package:user_app/features/due_payment/logic/controller/due_entry_controller.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/due_details_table_header.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/due_entry_action_button.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/due_entry_table_cell.dart';
 import 'package:user_app/features/due_payment/presentation/widget/due_details_screen/entry_edit.dart';
-import 'package:user_app/features/due_payment/provider/due_entry_action_provider.dart';
+import 'package:user_app/features/due_payment/logic/provider/due_entry_action_provider.dart';
 import 'package:user_app/features/due_payment/utils/due_date_format.dart';
 
 class DuePaymentRow extends StatelessWidget {
