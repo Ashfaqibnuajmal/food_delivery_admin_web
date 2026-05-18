@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/features/expances/data/services/expense_service.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_add_dialog.dart';
-import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
+import 'package:user_app/features/expances/provider/expense_provider.dart';
 
 final expenseService =
     ExpenseService(); // You can make it singleton or pass if needed

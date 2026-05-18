@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
+
+import '../../../../../core/widgets/header_cell.dart';
 
 class DuePaymentTableHeader extends StatelessWidget {
   const DuePaymentTableHeader({super.key});
@@ -21,34 +22,13 @@ class DuePaymentTableHeader extends StatelessWidget {
       ),
       child: const Row(
         children: [
-          HeaderCell(title: "Name"),
-          HeaderCell(title: "Phone No"),
-          HeaderCell(title: "Email"),
-          HeaderCell(title: "Balance Due"),
-          HeaderCell(title: "View"),
-          HeaderCell(title: "Edit"),
-          HeaderCell(title: "Delete"),
+          HeaderCell("Name"),
+          HeaderCell("Phone No"),
+          HeaderCell("Email"),
+          HeaderCell("Balance Due"),
+          HeaderCell("Edit"),
+          HeaderCell("Delete"),
         ],
-      ),
-    );
-  }
-}
-
-class HeaderCell extends StatelessWidget {
-  final String title;
-
-  const HeaderCell({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          title,
-          style: CustomTextStyles.header,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
       ),
     );
   }

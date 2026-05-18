@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/expances/presentation/widgets/summary_card.dart';
-import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
+import 'package:user_app/features/expances/provider/expense_provider.dart';
 
 class ExpenseSummarySection extends StatelessWidget {
   const ExpenseSummarySection({super.key});
@@ -11,13 +11,6 @@ class ExpenseSummarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<ExpenseProvider>(context);
     final expenses = provider.expenses;
-
-    // ✅ Optional loading / empty state
-    if (expenses.isEmpty) {
-      return const Center(
-        child: Text("No data available", style: TextStyle(color: Colors.white)),
-      );
-    }
 
     double gasTotal = 0;
     double rentTotal = 0;

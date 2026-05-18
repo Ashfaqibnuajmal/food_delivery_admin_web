@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
-import 'package:user_app/features/due_payment/presentation/widget/due_payment_screen/due_payment_table_header.dart';
+import 'package:user_app/core/widgets/header_cell.dart';
 import 'package:user_app/features/users/controller/user_controller.dart';
 import 'package:user_app/features/users/data/model/user_model.dart';
 import 'package:user_app/features/users/presentation/widget/data_cell_text.dart';
@@ -57,11 +57,11 @@ class _UserTableBody extends StatelessWidget {
             ),
             child: const Row(
               children: [
-                HeaderCell(title: 'Name'),
-                HeaderCell(title: 'Phone No'),
-                HeaderCell(title: 'Email'),
-                HeaderCell(title: 'Status'),
-                HeaderCell(title: 'Action'),
+                HeaderCell('Name'),
+                HeaderCell('Phone No'),
+                HeaderCell('Email'),
+                HeaderCell('Status'),
+                HeaderCell('Action'),
               ],
             ),
           ),

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/core/widgets/delete_dilog.dart';
 import 'package:user_app/features/expances/data/models/expense_model.dart';
+import 'package:user_app/features/expances/provider/expense_provider.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_edit_dialog.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_row.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_table_header.dart';
-import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
 
 class ExpenseTable extends StatelessWidget {
   const ExpenseTable({super.key});
@@ -17,49 +16,32 @@ class ExpenseTable extends StatelessWidget {
     final provider = Provider.of<ExpenseProvider>(context);
     final expenses = provider.expenses;
 
-    // ✅ ADD HERE
     if (provider.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Colors.white),
       );
     }
 
-    // ✅ EMPTY STATE
-    if (expenses.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long, size: 60, color: Colors.white54),
-            SizedBox(height: 10),
-            Text("No expenses yet", style: CustomTextStyles.smallWhiteText),
-          ],
-        ),
-      );
-    }
-
     return Container(
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
-        color: AppColors.lightBlue.withOpacity(0.1),
+        color: AppColors.darkBlue,
         border: Border.all(color: AppColors.deepBlue, width: 2),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
         children: [
           const ExpenseTableHeader(),
-
-          // Body
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 6),
               itemCount: expenses.length,
+              separatorBuilder: (_, __) =>
+                  Divider(height: 1, color: Colors.white.withOpacity(0.05)),
               itemBuilder: (context, index) {
                 final expense = expenses[index];
 
                 return ExpenseRow(
                   expense: expense,
-
-                  // ✅ EDIT
                   onEdit: () {
                     showEditExpenseDialog(
                       context: context,
@@ -93,8 +75,6 @@ class ExpenseTable extends StatelessWidget {
                           },
                     );
                   },
-
-                  // ✅ DELETE
                   onDelete: () {
                     customDeleteDialog(context, () async {
                       try {

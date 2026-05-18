@@ -5,7 +5,7 @@ import 'package:user_app/features/expances/presentation/widgets/expense_action.d
 import 'package:user_app/features/expances/presentation/widgets/expense_header.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_table.dart';
 import 'package:user_app/features/expances/presentation/widgets/expense_summary_section.dart';
-import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
+import 'package:user_app/features/expances/provider/expense_provider.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});

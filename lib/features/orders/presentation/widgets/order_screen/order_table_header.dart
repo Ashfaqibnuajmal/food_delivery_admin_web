@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/core/theme/textstyle.dart';
+import 'package:user_app/core/widgets/header_cell.dart';
 import 'package:user_app/core/theme/web_color.dart';
 
 class OrderTableHeader extends StatelessWidget {
@@ -28,27 +28,6 @@ class OrderTableHeader extends StatelessWidget {
           HeaderCell("Action", flex: 3),
           HeaderCell("View", flex: 2),
         ],
-      ),
-    );
-  }
-}
-
-class HeaderCell extends StatelessWidget {
-  final String label;
-  final int flex;
-
-  const HeaderCell(this.label, {super.key, this.flex = 1});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Center(
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: CustomTextStyles.tableHeader,
-        ),
       ),
     );
   }

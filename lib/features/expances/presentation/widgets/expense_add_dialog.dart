@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:user_app/core/theme/textstyle.dart';
 import 'package:user_app/core/theme/web_color.dart';
 import 'package:user_app/features/expances/constants/expesnse_contants.dart';
-import 'package:user_app/features/expances/presentation/provider/expense_provider.dart';
+import 'package:user_app/features/expances/provider/expense_provider.dart';
 import '../../../../core/widgets/input_decoration.dart';
 
 Future<void> customAddExpenseDialog({

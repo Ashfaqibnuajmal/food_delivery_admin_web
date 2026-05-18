@@ -8,7 +8,7 @@ class ExpenseTableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 22),
       decoration: const BoxDecoration(
         color: AppColors.deepBlue,
         borderRadius: BorderRadius.only(
@@ -16,44 +16,60 @@ class ExpenseTableHeader extends StatelessWidget {
           topLeft: Radius.circular(30),
         ),
       ),
-      child: Row(
-        children: const [
+      child: const Row(
+        children: [
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text("Date", style: CustomTextStyles.header),
+            child: Text(
+              "Date",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text("Category", style: CustomTextStyles.header),
+            child: Text(
+              "Category",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text("Amount", style: CustomTextStyles.header),
+            child: Text(
+              "Amount",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text("Status", style: CustomTextStyles.header),
+            child: Text(
+              "Status",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
           Expanded(
             flex: 1,
-            child: Center(child: Text("Edit", style: CustomTextStyles.header)),
+            child: Text(
+              "Edit",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
           ),
           Expanded(
             flex: 1,
-            child: Center(
-              child: Text("Delete", style: CustomTextStyles.header),
+            child: Text(
+              "Delete",
+              style: CustomTextStyles.header,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
         ],

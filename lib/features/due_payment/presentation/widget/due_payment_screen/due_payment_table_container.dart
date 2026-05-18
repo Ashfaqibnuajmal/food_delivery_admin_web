@@ -65,27 +65,24 @@ class DuePaymentTableContainer extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: DuePaymentTableHeader.tableMinWidth,
-                      child: Column(
-                        children: [
-                          const DuePaymentTableHeader(),
+                  child: SizedBox(
+                    width: DuePaymentTableHeader.tableMinWidth,
+                    child: Column(
+                      children: [
+                        const DuePaymentTableHeader(),
 
-                          if (filtered.isEmpty)
-                            const Expanded(
-                              child: Center(
-                                child: Text(
-                                  "No matching users found",
-                                  style: CustomTextStyles.header,
-                                ),
+                        if (filtered.isEmpty)
+                          const Expanded(
+                            child: Center(
+                              child: Text(
+                                "No matching users found",
+                                style: CustomTextStyles.header,
                               ),
-                            )
-                          else
-                            DuePaymentTable(users: filtered),
-                        ],
-                      ),
+                            ),
+                          )
+                        else
+                          DuePaymentTable(users: filtered),
+                      ],
                     ),
                   ),
                 ),

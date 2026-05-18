@@ -19,80 +19,108 @@ class ExpenseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.lightBlue.withOpacity(0.1),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      decoration: BoxDecoration(
+        color: AppColors.lightBlue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.lightBlue.withOpacity(0.10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: Row(
         children: [
-          // DATE
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                DateFormat('dd MMM yyyy').format(expense.date),
-                style: CustomTextStyles.text,
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Text(
+              DateFormat('dd MMM yyyy').format(expense.date),
+              style: CustomTextStyles.text,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
-
-          // CATEGORY
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                expense.category,
-                style: CustomTextStyles.text,
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Text(
+              expense.category,
+              style: CustomTextStyles.text,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
-
-          // AMOUNT
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                "₹${expense.amount.toStringAsFixed(2)}",
-                style: CustomTextStyles.addCategory,
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Text(
+              "₹${expense.amount.toStringAsFixed(2)}",
+              style: CustomTextStyles.addCategory,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
-
-          // STATUS
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Center(
               child: Text(
                 expense.status,
-                style: CustomTextStyles.status(expense.status),
+                style: CustomTextStyles.status(expense.status).copyWith(
+                  color: expense.status.toLowerCase() == "paid"
+                      ? AppColors.green
+                      : AppColors.errorRed,
+                  fontWeight: FontWeight.w600,
+                ),
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
-
-          // EDIT
           Expanded(
             flex: 1,
             child: Center(
-              child: IconButton(
-                onPressed: onEdit,
-                icon: const Icon(Icons.edit, color: Colors.white),
+              child: SizedBox(
+                height: 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.deepBlue,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: onEdit,
+                  child: const Text(
+                    "Edit",
+                    style: CustomTextStyles.smallWhiteText,
+                  ),
+                ),
               ),
             ),
           ),
-
-          // DELETE
           Expanded(
             flex: 1,
             child: Center(
-              child: IconButton(
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete, color: Colors.red),
+              child: SizedBox(
+                height: 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.errorRed,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: onDelete,
+                  child: const Text(
+                    "Delete",
+                    style: CustomTextStyles.smallWhiteText,
+                  ),
+                ),
               ),
             ),
           ),

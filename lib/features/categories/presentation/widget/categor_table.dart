@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/core/theme/web_color.dart';
+import 'package:user_app/core/widgets/header_cell.dart';
 import 'package:user_app/features/categories/data/models/category_model.dart'
     show CategoryModel;
 import 'package:user_app/features/categories/presentation/widget/delete_button.dart';
 import 'package:user_app/features/categories/presentation/widget/edit_button.dart';
 import 'package:user_app/features/categories/presentation/widget/image_preview_row.dart';
 
-import '../../../orders/presentation/widgets/order_screen/order_table_header.dart'
-    show HeaderCell;
-
 class CategoryTable extends StatelessWidget {
   final List<CategoryModel> categories;
   final TextEditingController catagorynameController;
 
   const CategoryTable({
+    super.key,
     required this.categories,
     required this.catagorynameController,
   });
