@@ -47,29 +47,54 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final isMobile = width < 1000;
+
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: SafeArea(
         child: Consumer<NotificationProvider>(
           builder: (context, provider, child) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // LEFT PANEL
-                SendNotificationPanel(
-                  formKey: _formKey,
-                  titleController: _titleController,
-                  messageController: _messageController,
-                  provider: provider,
-                ),
+            return isMobile
+                ? SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SendNotificationPanel(
+                          formKey: _formKey,
+                          titleController: _titleController,
+                          messageController: _messageController,
+                          provider: provider,
+                        ),
 
-                // RIGHT PANEL
-                NotificationHistoryPanel(
-                  provider: provider,
-                  onDelete: _showDeleteDialog,
-                ),
-              ],
-            );
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.8,
+                          child: NotificationHistoryPanel(
+                            provider: provider,
+                            onDelete: _showDeleteDialog,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SendNotificationPanel(
+                        formKey: _formKey,
+                        titleController: _titleController,
+                        messageController: _messageController,
+                        provider: provider,
+                      ),
+
+                      Expanded(
+                        child: NotificationHistoryPanel(
+                          provider: provider,
+                          onDelete: _showDeleteDialog,
+                        ),
+                      ),
+                    ],
+                  );
           },
         ),
       ),

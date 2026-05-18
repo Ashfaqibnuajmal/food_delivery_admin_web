@@ -10,30 +10,38 @@ class NotificationTitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Notification Title', style: CustomTextStyles.mediumWhiteText),
+
         const SizedBox(height: 8),
+
         TextFormField(
           controller: controller,
           style: const TextStyle(color: AppColors.pureWhite),
           decoration: InputDecoration(
             hintText: 'e.g. Service Unavailable',
             hintStyle: CustomTextStyles.lightWhite,
-            prefixIcon: const Icon(
+
+            prefixIcon: Icon(
               Icons.title,
               color: AppColors.lightBlue,
-              size: 20,
+              size: isMobile ? 18 : 20,
             ),
+
             filled: true,
             fillColor: AppColors.darkBlue,
+
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: AppColors.mediumBlue.withOpacity(0.4),
               ),
             ),
+
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
@@ -41,10 +49,12 @@ class NotificationTitleField extends StatelessWidget {
                 width: 1.5,
               ),
             ),
+
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: AppColors.errorRed),
             ),
+
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
@@ -52,9 +62,10 @@ class NotificationTitleField extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            contentPadding: const EdgeInsets.symmetric(
+
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 14,
+              vertical: isMobile ? 12 : 14,
             ),
           ),
           validator: NotificationValidator.validateTitle,

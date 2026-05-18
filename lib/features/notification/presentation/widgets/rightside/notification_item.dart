@@ -17,37 +17,79 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // ICON
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.mediumBlue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const Icon(
-            Icons.notifications_rounded,
-            color: AppColors.lightBlue,
-            size: 20,
-          ),
-        ),
+    final isMobile = MediaQuery.of(context).size.width < 700;
 
-        const SizedBox(width: 16),
+    return isMobile
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ICON
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.mediumBlue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.notifications_rounded,
+                      color: AppColors.lightBlue,
+                      size: 20,
+                    ),
+                  ),
 
-        // CONTENT
-        NotificationContent(notification: notification),
+                  const SizedBox(width: 14),
 
-        const SizedBox(width: 12),
+                  // CONTENT
+                  NotificationContent(notification: notification),
+                ],
+              ),
 
-        // STATUS
-        const NotificationStatusBadge(title: 'Sent'),
+              const SizedBox(height: 16),
 
-        const SizedBox(width: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const NotificationStatusBadge(title: 'Sent'),
 
-        // DELETE BUTTON
-        NotificationDeleteButton(onPressed: onDelete),
-      ],
-    );
+                  NotificationDeleteButton(onPressed: onDelete),
+                ],
+              ),
+            ],
+          )
+        : Row(
+            children: [
+              // ICON
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.mediumBlue.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.notifications_rounded,
+                  color: AppColors.lightBlue,
+                  size: 20,
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              // CONTENT
+              NotificationContent(notification: notification),
+
+              const SizedBox(width: 12),
+
+              // STATUS
+              const NotificationStatusBadge(title: 'Sent'),
+
+              const SizedBox(width: 10),
+
+              // DELETE BUTTON
+              NotificationDeleteButton(onPressed: onDelete),
+            ],
+          );
   }
 }

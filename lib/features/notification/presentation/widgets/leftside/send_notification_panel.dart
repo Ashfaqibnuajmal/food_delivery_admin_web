@@ -34,11 +34,10 @@ class _SendNotificationPanelState extends State<SendNotificationPanel> {
 
   void _onProviderChange() {
     if (widget.provider.isSent) {
-      setState(() {
-        widget.titleController.clear();
-        widget.messageController.clear();
-        widget.formKey.currentState?.reset();
-      });
+      widget.titleController.clear();
+      widget.messageController.clear();
+      widget.formKey.currentState?.reset();
+
       widget.provider.resetState();
     }
   }
@@ -56,39 +55,43 @@ class _SendNotificationPanelState extends State<SendNotificationPanel> {
     return SizedBox(
       width: isMobile ? double.infinity : 420,
       child: Container(
-        height: double.infinity,
         color: AppColors.deepBlue,
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(isMobile ? 18 : 32),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SendNotificationHeader(),
-              const SizedBox(height: 28),
-              Divider(color: AppColors.mediumBlue.withOpacity(0.3)),
-              const SizedBox(height: 28),
-              Form(
-                key: widget.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    NotificationTitleField(controller: widget.titleController),
-                    const SizedBox(height: 20),
-                    NotificationMessageField(
-                      controller: widget.messageController,
-                    ),
-                    const SizedBox(height: 24),
-                    SendNotificationButton(
-                      isLoading: widget.provider.isLoading,
-                      formKey: widget.formKey,
-                      titleController: widget.titleController,
-                      messageController: widget.messageController,
-                      provider: widget.provider,
-                    ),
-                  ],
+          physics: const BouncingScrollPhysics(),
+          child: Form(
+            key: widget.formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SendNotificationHeader(),
+
+                SizedBox(height: isMobile ? 20 : 28),
+
+                Divider(color: AppColors.mediumBlue.withOpacity(0.3)),
+
+                SizedBox(height: isMobile ? 20 : 28),
+
+                NotificationTitleField(controller: widget.titleController),
+
+                const SizedBox(height: 20),
+
+                NotificationMessageField(controller: widget.messageController),
+
+                const SizedBox(height: 24),
+
+                SendNotificationButton(
+                  isLoading: widget.provider.isLoading,
+                  formKey: widget.formKey,
+                  titleController: widget.titleController,
+                  messageController: widget.messageController,
+                  provider: widget.provider,
                 ),
-              ),
-            ],
+
+                SizedBox(height: isMobile ? 10 : 0),
+              ],
+            ),
           ),
         ),
       ),

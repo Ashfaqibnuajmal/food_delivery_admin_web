@@ -23,11 +23,14 @@ import 'package:user_app/features/users/data/services/user_services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  static const String appTitle = 'Restaurant Admin Panel';
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +40,9 @@ class MyApp extends StatelessWidget {
           create: (_) => CategoryServices(),
         ),
         ChangeNotifierProxyProvider<CategoryServices, CategoryProvider>(
-          create: (context) =>
-              CategoryProvider(context.read<CategoryServices>()),
+          create: (context) {
+            return CategoryProvider(context.read<CategoryServices>());
+          },
           update: (_, categoryServices, previous) {
             return previous ?? CategoryProvider(categoryServices);
           },
@@ -69,8 +73,6 @@ class MyApp extends StatelessWidget {
           create: (_) => ChatListProvider(),
         ),
         ChangeNotifierProvider<UserServices>(create: (_) => UserServices()),
-
-        // Due payment providers
         ChangeNotifierProvider<DueUserActionProvider>(
           create: (_) => DueUserActionProvider(),
         ),
@@ -80,20 +82,21 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<DueEntryActionProvider>(
           create: (_) => DueEntryActionProvider(),
         ),
-
         ChangeNotifierProxyProvider<UserServices, UserSearchProvider>(
-          create: (context) => UserSearchProvider(context.read<UserServices>()),
-          update: (_, userService, previous) {
-            return previous ?? UserSearchProvider(userService);
+          create: (context) {
+            return UserSearchProvider(context.read<UserServices>());
+          },
+          update: (_, userServices, previous) {
+            return previous ?? UserSearchProvider(userServices);
           },
         ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: appTitle,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         home: const HomePage(),
       ),

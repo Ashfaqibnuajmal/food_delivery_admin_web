@@ -7,27 +7,49 @@ class SendNotificationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(isMobile ? 8 : 10),
           decoration: BoxDecoration(
             color: AppColors.mediumBlue.withOpacity(0.2),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.campaign_rounded,
             color: AppColors.lightBlue,
-            size: 26,
+            size: isMobile ? 22 : 26,
           ),
         ),
-        const SizedBox(width: 14),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Send Notification', style: CustomTextStyles.header),
-            Text('Broadcast to all users', style: CustomTextStyles.lightWhite),
-          ],
+
+        SizedBox(width: isMobile ? 10 : 14),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Send Notification',
+                overflow: TextOverflow.ellipsis,
+                style: isMobile
+                    ? CustomTextStyles.header.copyWith(fontSize: 18)
+                    : CustomTextStyles.header,
+              ),
+
+              const SizedBox(height: 2),
+
+              Text(
+                'Broadcast to all users',
+                overflow: TextOverflow.ellipsis,
+                style: isMobile
+                    ? CustomTextStyles.lightWhite.copyWith(fontSize: 12)
+                    : CustomTextStyles.lightWhite,
+              ),
+            ],
+          ),
         ),
       ],
     );

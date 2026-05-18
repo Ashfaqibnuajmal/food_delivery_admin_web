@@ -19,91 +19,103 @@ class NotificationHistoryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            NotificationHistoryHeader(provider: provider),
+    final isMobile = MediaQuery.of(context).size.width < 1000;
 
-            const SizedBox(height: 20),
+    return Padding(
+      padding: EdgeInsets.all(isMobile ? 16 : 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          NotificationHistoryHeader(provider: provider),
 
-            // List
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: provider.getNotifications(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.lightBlue,
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${snapshot.error}',
-                        style: CustomTextStyles.mediumWhiteText,
-                      ),
-                    );
-                  }
+          const SizedBox(height: 20),
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: provider.getNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.lightBlue,
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: CustomTextStyles.mediumWhiteText,
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.notifications_off_rounded,
-                            size: 60,
+                            size: isMobile ? 50 : 60,
                             color: AppColors.pureWhite,
                           ),
+
                           const SizedBox(height: 16),
+
                           Text(
                             'No notifications sent yet',
+                            textAlign: TextAlign.center,
                             style: CustomTextStyles.mediumWhiteText,
                           ),
                         ],
                       ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      final doc = snapshot.data!.docs[index];
-                      final notification = NotificationModel.fromMap(
-                        doc.data() as Map<String, dynamic>,
-                        doc.id,
-                      );
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.deepBlue,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.mediumBlue.withOpacity(0.3),
-                          ),
-                        ),
-                        child: NotificationItem(
-                          notification: notification,
-                          onDelete: () => onDelete(context, doc.id),
-                        ),
-                      );
-                    },
+                    ),
                   );
-                },
-              ),
+                }
+
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final doc = snapshot.data!.docs[index];
+
+                        final notification = NotificationModel.fromMap(
+                          doc.data() as Map<String, dynamic>,
+                          doc.id,
+                        );
+
+                        return Container(
+                          width: constraints.maxWidth,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 14 : 20,
+                            vertical: isMobile ? 14 : 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.deepBlue,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.mediumBlue.withOpacity(0.3),
+                            ),
+                          ),
+                          child: NotificationItem(
+                            notification: notification,
+                            onDelete: () => onDelete(context, doc.id),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

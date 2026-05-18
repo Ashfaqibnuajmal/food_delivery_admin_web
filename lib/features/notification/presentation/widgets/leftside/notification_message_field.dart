@@ -10,26 +10,33 @@ class NotificationMessageField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Message', style: CustomTextStyles.mediumWhiteText),
+
         const SizedBox(height: 8),
+
         TextFormField(
           controller: controller,
-          maxLines: 6,
+          maxLines: isMobile ? 5 : 6,
           style: const TextStyle(color: AppColors.pureWhite),
           decoration: InputDecoration(
             hintText: 'Write your message here...',
             hintStyle: CustomTextStyles.lightWhite,
+
             filled: true,
             fillColor: AppColors.darkBlue,
+
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: AppColors.mediumBlue.withOpacity(0.4),
               ),
             ),
+
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
@@ -37,10 +44,12 @@ class NotificationMessageField extends StatelessWidget {
                 width: 1.5,
               ),
             ),
+
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: AppColors.errorRed),
             ),
+
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
@@ -48,7 +57,8 @@ class NotificationMessageField extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            contentPadding: const EdgeInsets.all(16),
+
+            contentPadding: EdgeInsets.all(isMobile ? 14 : 16),
           ),
           validator: NotificationValidator.validateMessage,
         ),

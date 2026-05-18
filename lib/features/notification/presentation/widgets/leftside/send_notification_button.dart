@@ -9,6 +9,7 @@ class SendNotificationButton extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController messageController;
   final NotificationProvider provider;
+
   const SendNotificationButton({
     super.key,
     required this.isLoading,
@@ -20,9 +21,11 @@ class SendNotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: isMobile ? 46 : 48,
       child: ElevatedButton.icon(
         onPressed: isLoading
             ? null
@@ -41,27 +44,39 @@ class SendNotificationButton extends StatelessWidget {
                   );
                 }
               },
+
         icon: isLoading
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
+            ? SizedBox(
+                width: isMobile ? 16 : 18,
+                height: isMobile ? 16 : 18,
+                child: const CircularProgressIndicator(
                   color: AppColors.pureWhite,
                   strokeWidth: 2,
                 ),
               )
-            : const Icon(Icons.send_rounded, size: 18),
-        label: Text(
-          isLoading ? 'Sending...' : 'Send to All Users',
-          style: CustomTextStyles.addCategory,
+            : Icon(Icons.send_rounded, size: isMobile ? 16 : 18),
+
+        label: Flexible(
+          child: Text(
+            isLoading ? 'Sending...' : 'Send to All Users',
+            overflow: TextOverflow.ellipsis,
+            style: isMobile
+                ? CustomTextStyles.addCategory.copyWith(fontSize: 13)
+                : CustomTextStyles.addCategory,
+          ),
         ),
+
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.mediumBlue,
           foregroundColor: AppColors.pureWhite,
           disabledBackgroundColor: AppColors.mediumBlue.withOpacity(0.3),
+
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 16),
+
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+
           elevation: 0,
         ),
       ),
