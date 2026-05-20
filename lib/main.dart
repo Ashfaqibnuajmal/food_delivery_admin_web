@@ -30,7 +30,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String appTitle = 'Restaurant Admin Panel';
+  static const String appTitle = 'Ammavans Hotel Admin Panel';
 
   @override
   Widget build(BuildContext context) {

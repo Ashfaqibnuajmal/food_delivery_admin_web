@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
           const Expanded(
             flex: 1,
             child: LoginLogoSection(
-              logoPath: "assets/Logo.jpeg",
+              logoPath: "assets/brand_logo.png",
               title: "Admin",
               subtitle: "Manage your hotel efficiently",
             ),
