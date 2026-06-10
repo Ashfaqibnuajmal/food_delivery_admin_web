@@ -5,6 +5,7 @@ import 'package:user_app/core/constants/firebase_options.dart';
 import 'package:user_app/core/provider/multiple_image_provider.dart';
 import 'package:user_app/core/provider/pick_image.dart';
 import 'package:user_app/core/provider/user_search_provider.dart';
+import 'package:user_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:user_app/features/auth/provider/login_provider.dart';
 import 'package:user_app/features/categories/data/services/category_services.dart';
 import 'package:user_app/features/categories/provider/category_provider.dart';
@@ -16,7 +17,6 @@ import 'package:user_app/features/due_payment/logic/provider/due_user_action_pro
 import 'package:user_app/features/expances/provider/expense_provider.dart';
 import 'package:user_app/features/foods/data/services/food_item_services.dart';
 import 'package:user_app/features/foods/logic/provider/dialogstateprovider.dart';
-import 'package:user_app/features/home/home.dart';
 import 'package:user_app/features/notification/provider/notification_provider.dart';
 import 'package:user_app/features/users/data/services/user_services.dart';
 
@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: const HomePage(),
+        home: const LoginScreen(),
       ),
     );
   }
